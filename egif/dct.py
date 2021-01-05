@@ -99,10 +99,36 @@ def idct_2d(matrix):
 
     for j in range(w):
         matrix[0, j] /= 2
-        matrix[:, j] = idct(matrix[:, j]) * 2 / j
+        matrix[:, j] = idct(matrix[:, j]) * 2 / h
 
     for i in range(h):
         matrix[i, 0] /= 2
-        matrix[i] = idct(matrix[i]) * 2 / h
+        matrix[i] = idct(matrix[i]) * 2 / w
+
+    return matrix
+
+
+def dct_3d(matrix):
+    l,h,w = matrix.shape
+
+    for i in range(h):
+        for j in range(w):
+            matrix[:, i, j] = dct(matrix[:, i, j])
+
+    for k in range(l):
+        matrix[k] = dct_2d(matrix[k])
+
+    return matrix
+
+def idct_3d(matrix):
+    l,h,w = matrix.shape
+
+    for k in range(l):
+        matrix[k] = idct_2d(matrix[k])
+
+    for i in range(h):
+        for j in range(w):
+            matrix[0, i, j] /= 2
+            matrix[:, i, j] = idct(matrix[:, i, j]) * 2 / l
 
     return matrix
