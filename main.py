@@ -3,7 +3,12 @@ from matplotlib import pyplot as plt
 from PIL import Image
 from time import time
 
-from egif import image, dct, encoding
+from egif import image, dct, encoding, quantization, utils
+
+
+# this is not really a main file, i'm not an idiot
+# this was created before everything and is used for tests
+
 
 
 # bad compression
@@ -26,6 +31,7 @@ sig_moide = lambda x: 1 / (1 + 2**x)
 a = 100
 TESTE = np.array([[-sig_moide(i+j-8)*a + 200 for i in range(8)] for j in range(8)])
 QUANTIZATION_TABLE = TESTE.astype(int)
+
 
 
 
@@ -140,9 +146,9 @@ def trans4(matrix):
         for j in range(w):
             transformed_matrix[i:i+8, j] = dct.dct(transformed_matrix[i:i+8, j])
 
-    # # quantization
-    # q = np.tile(QUANTIZATION_TABLE, (h//8, w//8))
-    # transformed_matrix = np.round(transformed_matrix / q)
+    # quantization
+    q = np.tile(QUANTIZATION_TABLE, (h//8, w//8))
+    transformed_matrix = np.round(transformed_matrix / q)
     
     return transformed_matrix 
 
@@ -150,8 +156,8 @@ def distrans4(matrix, ignoreit=None):
     h,w = matrix.shape
     transformed_matrix = matrix.copy()
 
-    # # disquantization 
-    # transformed_matrix *= np.tile(QUANTIZATION_TABLE, (h//8, w//8))
+    # disquantization 
+    transformed_matrix *= np.tile(QUANTIZATION_TABLE, (h//8, w//8))
 
     # idct
     for i in range(0, h, 8):
@@ -166,43 +172,73 @@ def distrans4(matrix, ignoreit=None):
             t[0] /= 2
             transformed_matrix[i, j:j+8] = dct.idct(t) * 2 / 8
 
+
+
+
     return transformed_matrix
 
 def trans5(matrix):
     h,w = matrix.shape
     transformed_matrix = matrix.copy()
+    size = 8
 
-    chunk = 8
-
-    for i in range(0, h, chunk):
-        for j in range(0, w, chunk):
-            dct.dct_2d(transformed_matrix[i:i+chunk, j:j+chunk])
-
+    for i in range(0, h, size):
+        for j in range(0, w, size):
+            chunk = transformed_matrix[i:i+size, j:j+size]
+            dct.dct_2d(chunk)
+            quantization.quantize(chunk)
     return transformed_matrix
 
 def distrans5(matrix):
     h,w = matrix.shape
     distransformed_matrix = matrix.copy()
+    size = 8
 
-    chunk = 8
+    for i in range(0, h, size):
+        for j in range(0, w, size):
+            chunk = distransformed_matrix[i:i+size, j:j+size]
+            quantization.disquantize(chunk)
+            dct.idct_2d(chunk)
+    return distransformed_matrix
 
-    for i in range(0, h, chunk):
-        for j in range(0, w, chunk):
-            dct.idct_2d(distransformed_matrix[i:i+chunk, j:j+chunk])
+def trans6(matrix):
+    l,h,w = matrix.shape
+    transformed_matrix = matrix.copy()
+    size = 8
 
+    for k in range(0,l, size):
+        for i in range(0, h, size):
+            for j in range(0, w, size):
+                chunk = transformed_matrix[k:k+size, i:i+size, j:j+size]
+                dct.dct_3d(chunk)
+                # quantization.quantize(chunk)
+    return transformed_matrix
+
+def distrans6(matrix):
+    l,h,w = matrix.shape
+    distransformed_matrix = matrix.copy()
+    size = 8
+
+    for k in range(0,l, size):
+        for i in range(0, h, size):
+            for j in range(0, w, size):
+                chunk = distransformed_matrix[k:k+size, i:i+size, j:j+size]
+                # quantization.disquantize(chunk)
+                dct.idct_3d(chunk)
     return distransformed_matrix
 
 
 
+
 def example_shrek():
-    for i in range(6):
+    for i in range(1):
         img = Image.open(f'examples/small/{i}.jpg').convert('L')
         matrix = np.asarray(img, dtype=int)
 
         a = time()
-        transformed = trans4(matrix)
+        transformed = trans5(matrix)
         b = time()
-        distransformed = distrans4(transformed, matrix.shape)
+        distransformed = distrans5(transformed)
         c = time()
 
         print(b-a, c-b)
@@ -255,6 +291,8 @@ def example_gradient():
 
     assert np.allclose(distransformed, distransformed)
 
+    print(np.sum(np.abs(matrix - distransformed)))
+
     fig = plt.figure()
     ax = fig.add_subplot(1, 3, 1)
     imgplot = plt.imshow(matrix, vmin=0, vmax=255, cmap='gray')
@@ -273,7 +311,7 @@ def example_gradient():
 def example_file():
     img = Image.open('examples/high/0.jpg').convert('L').resize((1080, 720))
     matrix = np.asarray(img, dtype=int)
-    transformed = trans4(matrix).astype(int)
+    transformed = trans5(matrix).astype(int)
 
 
     gambiarra = transformed.flatten()
@@ -292,9 +330,8 @@ def example_file():
 
     recovered = recovered.reshape(matrix.shape)
     assert np.allclose(recovered, transformed)
-    
 
-    distransformed = distrans4(recovered, recovered.shape)
+    distransformed = distrans5(recovered)
 
     fig = plt.figure()
     ax = fig.add_subplot(1, 2, 1)
@@ -307,32 +344,58 @@ def example_file():
 
     plt.show()
 
+def example_shrekes_3d():
+    matrix_3d = np.zeros((32,32,32))
+
+    for i in range(8):
+        img = Image.open(f'examples/small/{i}.jpg').convert('L').resize((32,32))
+        matrix_3d[i] = np.asarray(img)
+
+    s = time()
+    transformed = trans6(matrix_3d)
+    print('time to transform', time() - s)
+
+    s = time()
+    distransformed = distrans6(transformed)
+    print('time to distransform', time() - s)
+
+    assert np.allclose(matrix_3d, distransformed)
+
+
+    for i in range(8):
+        fig = plt.figure()
+        
+        ax = fig.add_subplot(1, 2, 1)
+        imgplot = plt.imshow(matrix_3d[i], vmin=0, vmax=255, cmap='gray')
+
+        ax = fig.add_subplot(1, 2, 2)
+        imgplot = plt.imshow(matrix_3d[i], vmin=0, vmax=255, cmap='gray')
+
+        plt.show()
 
 
 
 
 
-example_shrek()
+# example_shrek()
 # example_lusca()
 # example_gradient()
 # example_file()
-
-# print('Importou')
-
-# print('Tansformou')
-
-# tamanho_original = len(matrix.flatten()) * 8
-# tamanho_transformado = len(transformed.flatten()) * 16
-# tamanho_comprimido = len(code) * 16
+example_shrekes_3d()
 
 
-# print('tamanho original', tamanho_original)
-# print('tamanho transformado', tamanho_transformado)
-# print('tamanho comprimido', tamanho_comprimido)
-# print('taxa de compressão', tamanho_original/tamanho_comprimido)
+# matrix_3d = np.zeros((4,4,4))
+
+# for i in range(4):
+#     for j in range(4):
+#         for k in range(4):
+#             matrix_3d[i,j,k] = (i+j+k) * 10
 
 
+# trans = matrix_3d.copy()
+# dct.dct_3d(trans)
 
+# distrans = trans.copy()
+# dct.idct_3d(distrans)
 
-
-
+# print(np.allclose(matrix_3d, distrans))
