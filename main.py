@@ -202,6 +202,31 @@ def distrans5(matrix):
     return distransformed_matrix
 
 def trans6(matrix):
+    h,w = matrix.shape
+    transformed_matrix = matrix.copy()
+    size = 8
+    fdct = dct.DCT2D(size, size)
+
+    for i in range(0, h, size):
+        for j in range(0, w, size):
+            chunk = transformed_matrix[i:i+size, j:j+size]
+            fdct.foward(chunk)
+    return transformed_matrix
+
+def distrans6(matrix):
+    h,w = matrix.shape
+    distransformed_matrix = matrix.copy()
+    size = 8
+    fdct = dct.DCT2D(size, size)
+
+    for i in range(0, h, size):
+        for j in range(0, w, size):
+            chunk = distransformed_matrix[i:i+size, j:j+size]
+            fdct.inverse(chunk)
+    return distransformed_matrix
+    
+
+def trans3d_1(matrix):
     l,h,w = matrix.shape
     transformed_matrix = matrix.copy()
     size = 8
@@ -214,7 +239,7 @@ def trans6(matrix):
                 # quantization.quantize(chunk)
     return transformed_matrix
 
-def distrans6(matrix):
+def distrans3d_1(matrix):
     l,h,w = matrix.shape
     distransformed_matrix = matrix.copy()
     size = 8
@@ -259,9 +284,9 @@ def example_lusca():
         matrix = np.asarray(img, dtype=int)
 
         a = time()
-        transformed = trans5(matrix)
+        transformed = trans6(matrix)
         b = time()
-        distransformed = distrans5(transformed)
+        distransformed = distrans6(transformed)
         c = time()
 
         print(b-a, c-b)
@@ -350,11 +375,11 @@ def example_shrek_3d():
         matrix_3d[i] = np.asarray(img)
 
     s = time()
-    transformed = trans6(matrix_3d)
+    transformed = trans3d_1(matrix_3d)
     print('time to transform', time() - s)
 
     s = time()
-    distransformed = distrans6(transformed)
+    distransformed = distrans3d_1(transformed)
     print('time to distransform', time() - s)
 
     assert np.allclose(matrix_3d, distransformed)
@@ -380,11 +405,11 @@ def example_walking_3d():
         matrix_3d[i] = np.asarray(img)
 
     s = time()
-    transformed = trans6(matrix_3d)
+    transformed = trans3d_1(matrix_3d)
     print('time to transform', time() - s)
 
     s = time()
-    distransformed = distrans6(transformed)
+    distransformed = distrans3d_1(transformed)
     print('time to distransform', time() - s)
 
     assert np.allclose(matrix_3d, distransformed)
@@ -403,8 +428,8 @@ def example_walking_3d():
 
 
 # example_shrek()
-# example_lusca()
+example_lusca()
 # example_gradient()
 # example_file()
 # example_shrek_3d()
-example_walking_3d()
+# example_walking_3d()
