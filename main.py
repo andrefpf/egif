@@ -186,7 +186,7 @@ def trans5(matrix):
         for j in range(0, w, size):
             chunk = transformed_matrix[i:i+size, j:j+size]
             dct.dct_2d(chunk)
-            quantization.quantize(chunk)
+            # quantization.quantize(chunk)
     return transformed_matrix
 
 def distrans5(matrix):
@@ -197,7 +197,7 @@ def distrans5(matrix):
     for i in range(0, h, size):
         for j in range(0, w, size):
             chunk = distransformed_matrix[i:i+size, j:j+size]
-            quantization.disquantize(chunk)
+            # quantization.disquantize(chunk)
             dct.idct_2d(chunk)
     return distransformed_matrix
 
@@ -226,8 +226,6 @@ def distrans6(matrix):
                 # quantization.disquantize(chunk)
                 dct.idct_3d(chunk)
     return distransformed_matrix
-
-
 
 
 def example_shrek():
@@ -261,9 +259,9 @@ def example_lusca():
         matrix = np.asarray(img, dtype=int)
 
         a = time()
-        transformed = trans4(matrix)
+        transformed = trans5(matrix)
         b = time()
-        distransformed = distrans4(transformed, matrix.shape)
+        distransformed = distrans5(transformed)
         c = time()
 
         print(b-a, c-b)
@@ -345,10 +343,10 @@ def example_file():
     plt.show()
 
 def example_shrekes_3d():
-    matrix_3d = np.zeros((32,32,32))
+    matrix_3d = np.zeros((128,128,128))
 
     for i in range(8):
-        img = Image.open(f'examples/small/{i}.jpg').convert('L').resize((32,32))
+        img = Image.open(f'examples/small/{i}.jpg').convert('L').resize((128,128))
         matrix_3d[i] = np.asarray(img)
 
     s = time()
@@ -375,27 +373,8 @@ def example_shrekes_3d():
 
 
 
-
-
 # example_shrek()
 # example_lusca()
 # example_gradient()
 # example_file()
-example_shrekes_3d()
-
-
-# matrix_3d = np.zeros((4,4,4))
-
-# for i in range(4):
-#     for j in range(4):
-#         for k in range(4):
-#             matrix_3d[i,j,k] = (i+j+k) * 10
-
-
-# trans = matrix_3d.copy()
-# dct.dct_3d(trans)
-
-# distrans = trans.copy()
-# dct.idct_3d(distrans)
-
-# print(np.allclose(matrix_3d, distrans))
+# example_shrekes_3d()

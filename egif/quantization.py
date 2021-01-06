@@ -1,4 +1,5 @@
 import numpy as np 
+from functools import lru_cache
 
 from .utils import sigmoid
 
@@ -16,6 +17,7 @@ JPEG_QUANTIZATION_TABLE = np.array([
     [72, 92, 95, 98, 112, 100, 103, 99]
 ])
 
+@lru_cache()
 def get_quantization_table(shape, quality):
     h,w = shape
     table = np.zeros(shape)  
