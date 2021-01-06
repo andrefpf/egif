@@ -342,7 +342,7 @@ def example_file():
 
     plt.show()
 
-def example_shrekes_3d():
+def example_shrek_3d():
     matrix_3d = np.zeros((128,128,128))
 
     for i in range(8):
@@ -371,10 +371,40 @@ def example_shrekes_3d():
 
         plt.show()
 
+def example_walking_3d():
+    n = 400
+    matrix_3d = np.zeros((8,n,n))
+
+    for i in range(8):
+        img = Image.open(f'examples/medium/{i}.jpg').convert('L').resize((n,n))
+        matrix_3d[i] = np.asarray(img)
+
+    s = time()
+    transformed = trans6(matrix_3d)
+    print('time to transform', time() - s)
+
+    s = time()
+    distransformed = distrans6(transformed)
+    print('time to distransform', time() - s)
+
+    assert np.allclose(matrix_3d, distransformed)
+
+
+    for i in range(8):
+        fig = plt.figure()
+        
+        ax = fig.add_subplot(1, 2, 1)
+        imgplot = plt.imshow(matrix_3d[i], vmin=0, vmax=255, cmap='gray')
+
+        ax = fig.add_subplot(1, 2, 2)
+        imgplot = plt.imshow(matrix_3d[i], vmin=0, vmax=255, cmap='gray')
+
+        plt.show()
 
 
 # example_shrek()
 # example_lusca()
 # example_gradient()
 # example_file()
-# example_shrekes_3d()
+# example_shrek_3d()
+example_walking_3d()
