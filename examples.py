@@ -1,4 +1,5 @@
 import numpy as np
+from time import time
 
 from egif.image import load_image
 from egif.compression import compress_2d, decompress_2d, compress_3d, decompress_3d
@@ -16,6 +17,7 @@ def gradient_example():
 
     differences = np.sum(np.abs(original - decompressed))
     print('total differences', differences)
+    print()
 
     compare_images(original, decompressed)
 
@@ -32,6 +34,7 @@ def shrek_2d_example():
 
     print('time to compress', b-a)
     print('time to decompress', c-b)
+    print()
 
     compare_images(original, decompressed)
 
@@ -48,6 +51,7 @@ def lusca_2d_example():
 
     print('time to compress', b-a)
     print('time to decompress', c-b)
+    print()
 
     compare_images(original, decompressed)
 
@@ -68,6 +72,7 @@ def shrek_3d_example():
     
     print('time to compress', b-a)
     print('time to decompress', c-b)
+    print()
 
     for org, dcp in zip(original, decompressed):
         compare_images(org, dcp)
@@ -89,13 +94,14 @@ def walking_3d_example():
     
     print('time to compress', b-a)
     print('time to decompress', c-b)
+    print()
 
     for org, dcp in zip(original, decompressed):
         compare_images(org, dcp)
     
 
-# gradient_example()
-# shrek_2d_example()
-# lusca_2d_example()
-# shrek_3d_example()
-# walking_3d_example()
+gradient_example()
+shrek_2d_example()
+lusca_2d_example()
+shrek_3d_example()
+walking_3d_example()
