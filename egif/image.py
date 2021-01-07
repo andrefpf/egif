@@ -1,5 +1,5 @@
 import numpy as np 
-from .dct import dct, idct
+from .transforms import dct, idct
 
 
 def zigzag_matrix(matrix):

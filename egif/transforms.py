@@ -108,6 +108,7 @@ class DCT:
         return array
 
 
+
 class DCT2D(DCT):
     def __init__(self, width, height):
         if not is_pow_2(width):
@@ -119,13 +120,18 @@ class DCT2D(DCT):
         self.width = width
         self.height = height
     
-    
+
     def foward(self, matrix):
-        if matrix.shape != (self.height, self.width):
+        right_shape = all([
+            matrix.shape[0] == self.height,
+            matrix.shape[1] == self.width,
+        ])
+
+        if not right_shape:
             raise ValueError('Matrix size is not equal the predefined size.')
 
         for h in range(self.height):
-            self._fdct(matrix[h])
+            self._fdct(matrix[h, :])
 
         for w in range(self.width):
             self._fdct(matrix[:, w])
@@ -133,7 +139,12 @@ class DCT2D(DCT):
         return matrix
 
     def inverse(self, matrix):
-        if matrix.shape != (self.height, self.width):
+        right_shape = all([
+            matrix.shape[0] == self.height,
+            matrix.shape[1] == self.width,
+        ])
+
+        if not right_shape:
             raise ValueError('Matrix size is not equal the predefined size.')
 
         for w in range(self.width):
@@ -142,11 +153,90 @@ class DCT2D(DCT):
 
         for h in range(self.height):
             matrix[h, 0] /= 2
-            matrix[h, :] = self._ifdct(matrix[h]) * 2 / self.width
+            matrix[h, :] = self._ifdct(matrix[h, :]) * 2 / self.width
 
         return matrix
 
 
+
+class DCT3D(DCT):
+    def __init__(self, width, height, length):
+        if not is_pow_2(width):
+            raise ValueError('Matrix width is not a power of 2.')
+
+        if not is_pow_2(height):
+            raise ValueError('Matrix height is not a power of 2.')
+
+        if not is_pow_2(length):
+            raise ValueError('Matrix length is not a power of 2.')
+
+        self.width = width
+        self.height = height
+        self.length = length
+    
+
+    def foward(self, matrix):
+        right_shape = all([
+            matrix.shape[0] == self.length,
+            matrix.shape[1] == self.height,
+            matrix.shape[2] == self.width,
+        ])
+
+        if not right_shape:
+            raise ValueError('Matrix size is not equal the predefined size.')
+        
+        # transform over x axis
+        for l in range(self.length):
+            for w in range(self.width):
+                self._fdct(matrix[l, :, w])
+        
+        # transform over y axis
+        for l in range(self.length):
+            for h in range(self.height):
+                self._fdct(matrix[l, h, :])
+
+        # transform over z axis
+        for h in range(self.height):
+            for w in range(self.width):
+                self._fdct(matrix[:, h, w])
+        
+        return matrix
+                
+
+    def inverse(self, matrix):
+        right_shape = all([
+            matrix.shape[0] == self.length,
+            matrix.shape[1] == self.height,
+            matrix.shape[2] == self.width,
+        ])
+
+        if not right_shape:
+            raise ValueError('Matrix size is not equal the predefined size.')
+
+        # transform over z axis
+        for h in range(self.height):
+            for w in range(self.width):
+                matrix[0, h, w] /= 2
+                self._ifdct(matrix[:, h, w])
+                matrix[:, h, w] *= 2 / self.length
+
+        # transform over y axis
+        for l in range(self.length):
+            for h in range(self.height):
+                matrix[l, h, 0] /= 2
+                self._ifdct(matrix[l, h, :])
+                matrix[l, h, :] *= 2 / self.width
+        
+        # transform over x axis
+        for l in range(self.length):
+            for w in range(self.width):
+                matrix[l, 0, w] /= 2
+                self._ifdct(matrix[l, :, w])
+                matrix[l, :, w] *= 2 / self.height
+                
+        return matrix
+
+        
 
 
 

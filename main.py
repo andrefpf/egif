@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 from PIL import Image
 from time import time
 
-from egif import image, dct, encoding, quantization, utils
+from egif import transforms, image, encoding, quantization, utils
 
 
 # this is not really a main file, i'm not an idiot
@@ -88,7 +88,7 @@ def trans2(matrix):
         vector[n] = matrix[i,j]
     
     for i in range(0, len(vector), 64):
-        vector[i : i+64] = dct.transform(vector[i : i+64])
+        vector[i : i+64] = transforms.transform(vector[i : i+64])
 
     return vector
 
@@ -97,7 +97,7 @@ def distrans2(vector, shape):
     array = np.zeros(len(vector))
 
     for i in range(0, len(vector), 64):
-        array[i : i+64] = dct.distransform(vector[i : i+64])   
+        array[i : i+64] = transforms.distransform(vector[i : i+64])   
 
     for n, (i,j) in enumerate(image.zig_zag(*shape)):
         matrix[i,j] = array[n]
@@ -110,11 +110,11 @@ def trans3(matrix):
 
     for i in range(h):
         for j in range(0, w, 8):
-            new_matrix[i, j:j+8] = dct.transform(matrix[i, j:j+8], 2)
+            new_matrix[i, j:j+8] = transforms.transform(matrix[i, j:j+8], 2)
 
     for i in range(w):
         for j in range(0, h, 8):
-            new_matrix[j:j+8, i] = dct.transform(new_matrix[j:j+8, i], 2)
+            new_matrix[j:j+8, i] = transforms.transform(new_matrix[j:j+8, i], 2)
 
     return new_matrix
 
@@ -124,11 +124,11 @@ def distrans3(matrix, ignoreit):
 
     for i in range(w):
         for j in range(0, h, 8):
-            new_matrix[j:j+8, i] = dct.distransform(matrix[j:j+8, i], 2)
+            new_matrix[j:j+8, i] = transforms.distransform(matrix[j:j+8, i], 2)
 
     for i in range(h):
         for j in range(0, w, 8):
-            new_matrix[i, j:j+8] = dct.distransform(new_matrix[i, j:j+8], 2)
+            new_matrix[i, j:j+8] = transforms.distransform(new_matrix[i, j:j+8], 2)
 
     return new_matrix
 
@@ -140,11 +140,11 @@ def trans4(matrix):
     # dct
     for i in range(h):
         for j in range(0, w, 8):
-            transformed_matrix[i, j:j+8] = dct.dct(transformed_matrix[i, j:j+8])
+            transformed_matrix[i, j:j+8] = transforms.dct(transformed_matrix[i, j:j+8])
     
     for i in range(0, h, 8):
         for j in range(w):
-            transformed_matrix[i:i+8, j] = dct.dct(transformed_matrix[i:i+8, j])
+            transformed_matrix[i:i+8, j] = transforms.dct(transformed_matrix[i:i+8, j])
 
     # quantization
     q = np.tile(QUANTIZATION_TABLE, (h//8, w//8))
@@ -164,13 +164,13 @@ def distrans4(matrix, ignoreit=None):
         for j in range(w):
             t = transformed_matrix[i:i+8, j]
             t[0] /= 2
-            transformed_matrix[i:i+8, j] = dct.idct(t) * 2 / 8
+            transformed_matrix[i:i+8, j] = transforms.idct(t) * 2 / 8
 
     for i in range(h):
         for j in range(0, w, 8):
             t = transformed_matrix[i, j:j+8]
             t[0] /= 2
-            transformed_matrix[i, j:j+8] = dct.idct(t) * 2 / 8
+            transformed_matrix[i, j:j+8] = transforms.idct(t) * 2 / 8
 
 
 
@@ -185,7 +185,7 @@ def trans5(matrix):
     for i in range(0, h, size):
         for j in range(0, w, size):
             chunk = transformed_matrix[i:i+size, j:j+size]
-            dct.dct_2d(chunk)
+            transforms.dct_2d(chunk)
             # quantization.quantize(chunk)
     return transformed_matrix
 
@@ -198,31 +198,31 @@ def distrans5(matrix):
         for j in range(0, w, size):
             chunk = distransformed_matrix[i:i+size, j:j+size]
             # quantization.disquantize(chunk)
-            dct.idct_2d(chunk)
+            transforms.idct_2d(chunk)
     return distransformed_matrix
 
 def trans6(matrix):
     h,w = matrix.shape
     transformed_matrix = matrix.copy()
     size = 8
-    fdct = dct.DCT2D(size, size)
+    dct = transforms.DCT2D(size, size)
 
     for i in range(0, h, size):
         for j in range(0, w, size):
             chunk = transformed_matrix[i:i+size, j:j+size]
-            fdct.foward(chunk)
+            dct.foward(chunk)
     return transformed_matrix
 
 def distrans6(matrix):
     h,w = matrix.shape
     distransformed_matrix = matrix.copy()
     size = 8
-    fdct = dct.DCT2D(size, size)
+    dct = transforms.DCT2D(size, size)
 
     for i in range(0, h, size):
         for j in range(0, w, size):
             chunk = distransformed_matrix[i:i+size, j:j+size]
-            fdct.inverse(chunk)
+            dct.inverse(chunk)
     return distransformed_matrix
     
 
@@ -235,7 +235,7 @@ def trans3d_1(matrix):
         for i in range(0, h, size):
             for j in range(0, w, size):
                 chunk = transformed_matrix[k:k+size, i:i+size, j:j+size]
-                dct.dct_3d(chunk)
+                transforms.dct_3d(chunk)
                 # quantization.quantize(chunk)
     return transformed_matrix
 
@@ -249,9 +249,36 @@ def distrans3d_1(matrix):
             for j in range(0, w, size):
                 chunk = distransformed_matrix[k:k+size, i:i+size, j:j+size]
                 # quantization.disquantize(chunk)
-                dct.idct_3d(chunk)
+                transforms.idct_3d(chunk)
     return distransformed_matrix
 
+def trans3d_2(matrix):
+    l,h,w = matrix.shape
+    size = 8
+    transformed_matrix = matrix.copy()
+    dct = transforms.DCT3D(size, size, size)
+
+    for k in range(0,l, size):
+        for i in range(0, h, size):
+            for j in range(0, w, size):
+                chunk = transformed_matrix[k:k+size, i:i+size, j:j+size]
+                dct.foward(chunk)
+                
+    return transformed_matrix
+
+def distrans3d_2(matrix):
+    l,h,w = matrix.shape
+    size = 8
+    transformed_matrix = matrix.copy()
+    dct = transforms.DCT3D(size, size, size)
+
+    for k in range(0,l, size):
+        for i in range(0, h, size):
+            for j in range(0, w, size):
+                chunk = transformed_matrix[k:k+size, i:i+size, j:j+size]
+                dct.inverse(chunk)
+                
+    return transformed_matrix
 
 def example_shrek():
     for i in range(1):
@@ -368,18 +395,19 @@ def example_file():
     plt.show()
 
 def example_shrek_3d():
-    matrix_3d = np.zeros((128,128,128))
+    n = 256
+    matrix_3d = np.zeros((8,n,n))
 
     for i in range(8):
-        img = Image.open(f'examples/small/{i}.jpg').convert('L').resize((128,128))
+        img = Image.open(f'examples/small/{i}.jpg').convert('L').resize((n,n))
         matrix_3d[i] = np.asarray(img)
 
     s = time()
-    transformed = trans3d_1(matrix_3d)
+    transformed = trans3d_2(matrix_3d)
     print('time to transform', time() - s)
 
     s = time()
-    distransformed = distrans3d_1(transformed)
+    distransformed = distrans3d_2(transformed)
     print('time to distransform', time() - s)
 
     assert np.allclose(matrix_3d, distransformed)
@@ -428,8 +456,10 @@ def example_walking_3d():
 
 
 # example_shrek()
-example_lusca()
+# example_lusca()
 # example_gradient()
 # example_file()
-# example_shrek_3d()
+example_shrek_3d()
 # example_walking_3d()
+
+# deus tenha misericórdia desta nação 
