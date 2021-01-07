@@ -22,6 +22,7 @@ EGIF try to overcome this issue compressing the images with a Discrete Cossine T
 - I still don't know a good way to store all these bytes in a file.
 - I also need to test how to go though the image to optimize the compression (maybe zig-zag? wtf is a zig-zag in 3 dimentions? No idea).
 - Some parts are a little bit messy yet.
+- I need to create a decent GUI or a CODEC(?) to show the image
 
 ## How to run it
 - No idea.
