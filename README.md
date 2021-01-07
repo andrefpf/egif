@@ -17,7 +17,7 @@ EGIF try to overcome this issue compressing the images with a Discrete Cossine T
 - When it's done you can write it into a file.
 
 ## Problems
-- The process is very slow, i pretend to rewrite it in c++.
+- The process is very slow, i intend to rewrite it in c++.
 - Only black and white images are suported until now (i intend to change it to a YCbCr color scheme in the near future).
 - I still don't know a good way to store all these bytes in a file.
 - I also need to test how to go though the image to optimize the compression (maybe zig-zag? wtf is a zig-zag in 3 dimentions? No idea).
