@@ -14,7 +14,7 @@ EGIF try to overcome this issue compressing the images with a Discrete Cossine T
 - The 3d matrix is divided in 3d chunks of 8x8x8 matrix (or any other size if needed).
 - For every chunk we apply a DCT in every array in every dimention and quantize it.
 - The remaining matrix should be full of zeros, so we go through it and apply a Run Lenght Encoding to compress these repetitions.
-- When it's donne you can write it into a file.
+- When it's done you can write it into a file.
 
 ## Problems
 - The process is very slow, i pretend to rewrite it in c++.
