@@ -17,9 +17,8 @@ class DCT:
             raise ValueError('Array size is not a power of 2.')
 
         self.size = size
-        self.cossines = [cos(i) for i in range(n) for j in range(size)]
+        # self.cossines = [cos(i) for i in range(n) for j in range(size)]
         # im too dumb to do it a simple way
-        # self.cos_cache = self.precompute_cossines()
     
     def foward(self, array, copy=False):
         if len(array) != self.size:
@@ -40,8 +39,8 @@ class DCT:
         array[0] /= 2
         return self._ifdct(array) * 2 // self.size
 
-    def get_cos(self, i, n):
-        return self.cossines[i + n//2 - 1] 
+    # def get_cos(self, i, n):
+    #     return self.cossines[i + n//2 - 1] 
 
     def _fdct(self, array):
         # unscaled algorithm
@@ -217,22 +216,19 @@ class DCT3D(DCT):
         for h in range(self.height):
             for w in range(self.width):
                 matrix[0, h, w] /= 2
-                self._ifdct(matrix[:, h, w])
-                matrix[:, h, w] *= 2 / self.length
+                matrix[:, h, w] = self._ifdct(matrix[:, h, w]) * 2 / self.length
 
         # transform over y axis
         for l in range(self.length):
             for h in range(self.height):
                 matrix[l, h, 0] /= 2
-                self._ifdct(matrix[l, h, :])
-                matrix[l, h, :] *= 2 / self.width
+                matrix[l, h, :] = self._ifdct(matrix[l, h, :]) * 2 / self.width
         
         # transform over x axis
         for l in range(self.length):
             for w in range(self.width):
                 matrix[l, 0, w] /= 2
-                self._ifdct(matrix[l, :, w])
-                matrix[l, :, w] *= 2 / self.height
+                matrix[l, :, w] = self._ifdct(matrix[l, :, w]) * 2 / self.height
                 
         return matrix
 

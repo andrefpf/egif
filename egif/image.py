@@ -1,23 +1,38 @@
-import numpy as np 
-from .transforms import dct, idct
+import numpy as np
+from PIL import Image
 
-
-def zigzag_matrix(matrix):
+def chunks_2d(matrix, size=8):
     height, width = matrix.shape
-    array = np.zeros(height * width)
-    for n, (i,j) in enumerate(zig_zag(height, width)):
-        array[n] = matrix[i,j]
-    return array
+    
+    for h in range(0, height, size):
+        for w in range(0, width, size):
+            yield matrix[h:h+size, w:w+size]
 
-def zig_zag_array(array, shape):
-    height, width = shape 
-    matrix = np.zeros(shape)
-    for n, (i,j) in enumerate(zig_zag(height, width)):
-        matrix[i,j] = array[n]
-    return matrix
+def chunks_3d(matrix, size=8):
+    lenght, height, width = matrix.shape
+
+    for l in range(0, lenght, size):
+        for h in range(0, height, size):
+            for w in range(0, width, size):
+                yield matrix[l:l+size, h:h+size, w:w+size]
+
+def load_egif(path):
+    pass 
+
+def write_egif(path):
+    pass
+
+def load_image(path, shape=(256, 256)):
+    img = Image.open(path)
+    img = img.convert('L') # only black and white is supported 
+    img = img.resize(shape)
+    return np.asarray(img, dtype=int)
+
+def write_image(path):
+    pass
 
 
-
+    
 
 def zig_zag(height, width):
     i,j = 0,0
@@ -45,29 +60,3 @@ def zig_zag(height, width):
             j += direction
         
         yield i,j
-
-
-def transform(matrix, quality=1):
-    vector = np.array([matrix[i,j] for i,j in zig_zag(*matrix.shape)])
-    size = len(vector)
-
-    result = dct(vector)
-    for i in range(size):
-        result[i] //= 1 + quality * i
-    return result
-
-def distransform(vector, shape, quality=1):
-    size = len(vector)
-    result = vector
-    
-    for i in range(size):
-        result[i] *= 1 + quality * i 
-
-    result[0] /= 2 
-    result = idct(result) * 2 / size
-
-    matrix = np.zeros(shape=shape)
-    for n, (i,j) in zip(range(size), zig_zag(*shape)):
-        matrix[i,j] = result[n]
-
-    return matrix
