@@ -18,11 +18,12 @@ JPEG_QUANTIZATION_TABLE = np.array([
 ])
 
 def get_2d_qtable(shape, quality=100):
-    h,w = shape
+    height, width = shape
     table = np.zeros(shape)  
-    for i in range(h):
-        for j in range(w):
-            table[i,j] = 200 - sigmoid(i+j-h-w) * quality 
+
+    for h in range(height):
+        for w in range(width):
+            table[h,w] = 200 - sigmoid(h + w - height - width) * quality 
     return table.astype(int)
 
 def get_3d_qtable(shape, quality=100):
@@ -33,7 +34,6 @@ def get_3d_qtable(shape, quality=100):
         for h in range(height):
             for w in range(width):
                 table[f,h,w] = 1 + f + h + w
-
     return table * quality
 
 def quantize(matrix, qtable):
