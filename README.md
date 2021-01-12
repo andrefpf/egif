@@ -18,8 +18,7 @@ EGIF try to overcome this issue compressing the images with a Discrete Cossine T
 
 ## Problems
 - The process is very slow, i intend to rewrite it in c++.
-- Only black and white images are suported until now (i intend to change it to a YCbCr color scheme in the near future).
-- I still don't know a good way to store all these bytes in a file.
+- I need to deal better with colorspaces
 - I also need to test how to go though the image to optimize the compression (maybe zig-zag? wtf is a zig-zag in 3 dimentions? No idea).
 - Some parts are a little bit messy yet.
 - I need to create a decent GUI or a CODEC(?) to show the image
