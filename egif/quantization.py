@@ -17,21 +17,27 @@ JPEG_QUANTIZATION_TABLE = np.array([
     [72, 92, 95, 98, 112, 100, 103, 99]
 ])
 
-@lru_cache()
-def get_quantization_table(shape, quality):
+def get_2d_qtable(shape, quality=100):
     h,w = shape
     table = np.zeros(shape)  
-
     for i in range(h):
         for j in range(w):
             table[i,j] = 200 - sigmoid(i+j-h-w) * quality 
-
     return table.astype(int)
 
-def quantize(matrix, quality=100):
-    table = get_quantization_table(matrix.shape, quality)
-    matrix[:] = np.round(matrix / table)
+def get_3d_qtable(shape, quality=100):
+    frames, height, width = shape
+    table = np.zeros(shape)  
 
-def disquantize(matrix, quality=100):
-    table = get_quantization_table(matrix.shape, quality)
-    matrix[:] = matrix * table
+    for f in range(frames):
+        for h in range(height):
+            for w in range(width):
+                table[f,h,w] = 1 + f + h + w
+
+    return table * quality
+
+def quantize(matrix, qtable):
+    matrix[:] = np.round(matrix / qtable)
+
+def disquantize(matrix, qtable):
+    matrix[:] = matrix * qtable

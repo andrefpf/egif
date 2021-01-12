@@ -1,62 +1,76 @@
 import numpy as np
 from PIL import Image
 
-def chunks_2d(matrix, size=8):
-    height, width = matrix.shape
-    
-    for h in range(0, height, size):
-        for w in range(0, width, size):
-            yield matrix[h:h+size, w:w+size]
+class EgifImage:
+    def __init__(self, matrix, mode='ycbcr'):
+        self.width = None 
+        self.height = None
+        self.frames = None 
 
-def chunks_3d(matrix, size=8):
-    lenght, height, width = matrix.shape
-
-    for l in range(0, lenght, size):
-        for h in range(0, height, size):
-            for w in range(0, width, size):
-                yield matrix[l:l+size, h:h+size, w:w+size]
-
-def load_egif(path):
-    pass 
-
-def write_egif(path):
-    pass
-
-def load_image(path, shape=(256, 256)):
-    img = Image.open(path)
-    img = img.convert('L') # only black and white is supported 
-    img = img.resize(shape)
-    return np.asarray(img, dtype=int)
-
-def write_image(path):
-    pass
-
-
-    
-
-def zig_zag(height, width):
-    i,j = 0,0
-    direction = 1 
-
-    yield i,j
-    
-    for n in range(width*height - 1):
-        going_up = (direction == 1)
-
-        if going_up and j == width-1:
-            i += 1 
-            direction = -direction
-        elif going_up and i == 0:
-            j += 1
-            direction = -direction
-        elif not going_up and i == height-1:
-            j += 1
-            direction = -direction
-        elif not going_up and j == 0:
-            i += 1 
-            direction = -direction
-        else:
-            i -= direction
-            j += direction
+        self.y = None 
+        self.cb = None 
+        self.cr = None 
         
-        yield i,j
+        if mode == 'ycbcr':
+            self.load_from_ycbcr(matrix)
+        else:
+            raise ValueError('Deu merda, amigo.')
+
+    def load_from_ycbcr(self, ycbcr):
+        y, cb, cr = ycbcr
+
+        if not (y.shape == cb.shape == cr.shape):
+            raise ValueError('Image shapes are not right.')
+        
+        if y.ndim == 2:
+            self.frames = 1
+            self.height = y.shape[0]
+            self.width = y.shape[1]
+        elif y.ndim == 3:
+            self.frames = y.shape[0]
+            self.height = y.shape[1]
+            self.width = y.shape[2]
+        else:
+            raise ValueError('Image should be 2 or 3 dimentional.')
+
+        self.y = y
+        self.cb = cb
+        self.cr = cr
+
+def load_images(paths, shape=(256,256)):
+    y = []
+    cb = []
+    cr = []
+
+    for path in paths:
+        img = Image.open(path)
+        img = img.resize(shape)
+        # img = img.convert('YCbCr')
+
+        matrix = np.asarray(img, dtype=int)
+
+        y.append(matrix[:,:,0])
+        cb.append(matrix[:,:,1])
+        cr.append(matrix[:,:,2])
+
+    y = np.stack(y)
+    cb = np.stack(cb)
+    cr = np.stack(cr)
+
+    return EgifImage((y,cb,cr))
+
+def load_image(path, shape=(256,256)):
+    img = Image.open(path)
+    img = img.resize(shape)
+    # img = img.convert('YCbCr')
+
+    matrix = np.asarray(img, dtype=int)
+    y = matrix[:,:,0]
+    cb = matrix[:,:,1]
+    cr = matrix[:,:,2]
+
+    return EgifImage((y,cb,cr), mode='ycbcr')
+
+def write_image(animage):
+    pass
+
