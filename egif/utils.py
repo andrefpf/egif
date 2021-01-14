@@ -1,5 +1,3 @@
-import numpy as np
-
 def sigmoid(x):
     return 1 / (1 + 2**x)
 
@@ -9,6 +7,11 @@ def is_pow_2(x):
     # then x-1 = 7 = 0111
     # then 1000 and 0111 = 0
     return (x != 0) and (x & (x-1) == 0)
+
+def replace(data, a, b):
+    for i in range(len(data)):
+        if data[i] == a:
+            data[i] = b
 
 def chunks_2d(matrix, size=8):
     height, width = matrix.shape
