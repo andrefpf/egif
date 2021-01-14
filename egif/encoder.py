@@ -3,9 +3,9 @@ from scipy import fft
 from time import time
 from struct import pack, unpack_from
 
-from .transforms import DCT2D, DCT3D
 from .utils import chunks_2d, chunks_3d
-from .quantization import quantize, disquantize, get_2d_qtable, get_3d_qtable
+from .transformer import DCT2D, DCT3D
+from .quantizer import quantize, disquantize, get_2d_qtable, get_3d_qtable
 
 
 def to_16_bits(data):

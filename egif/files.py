@@ -2,7 +2,7 @@ import numpy as np
 from PIL import Image
 
 from .image import EgifImage
-from .encoding import encode, decode, to_16_bits, from_16_bits
+from .encoder import encode, decode, to_16_bits, from_16_bits
 from .utils import replace
 
 

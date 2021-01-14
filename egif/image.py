@@ -18,10 +18,10 @@ class EgifImage:
         matrix = np.clip(matrix, 0, 255)
         return matrix
     
-    def toqimage(self):
+    def toqimages(self):
         pass 
     
-    def toqpixmap(self):
+    def toqpixmaps(self):
         pass 
 
     def load_matrix(self, matrix):
