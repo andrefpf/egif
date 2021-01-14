@@ -17,27 +17,48 @@ JPEG_QUANTIZATION_TABLE = np.array([
     [72, 92, 95, 98, 112, 100, 103, 99]
 ])
 
-def get_2d_qtable(shape, quality=100):
+def get_2d_qtable(shape, quality=5):
+    if not (1 <= quality <= 5):
+        raise ValueError('Quality parameter should be between 1 and 5')
+
     height, width = shape
     table = np.zeros(shape)  
 
     for h in range(height):
         for w in range(width):
-            table[h,w] = 200 - sigmoid(h + w - height - width) * quality 
+            table[h,w] = 200 - sigmoid(h + w - height - width) * quality * 20
     return table.astype(int)
 
-def get_3d_qtable(shape, quality=100):
+def get_3d_qtable(shape, quality=5):
+    if not (1 <= quality <= 5):
+        raise ValueError('Quality parameter should be between 1 and 5')
+
     frames, height, width = shape
-    table = np.zeros(shape)  
+    table = np.ones(shape, dtype=int)  
+
+    a = (6 - quality) * 100 # rise up the maximum value
+    b = 0.5 # smooths the curve 
 
     for f in range(frames):
         for h in range(height):
             for w in range(width):
-                table[f,h,w] = 1 + f + h + w
-    return table * quality
+                exponent = -b * (f+1) * (h+1) * (w+1)
+                table[f,h,w] = a * (1 - np.exp(exponent)) + 1
+
+    # print(table)
+    # exit()
+    # for f in range(frames):
+    #     for h in range(height):
+    #         for w in range(width):
+    #             sig = sigmoid((f + h + w - frames - height - width) / quality)
+    #             table[f,h,w] = 200 - sig * 100
+
+    return table 
 
 def quantize(matrix, qtable):
     matrix[:] = np.round(matrix / qtable)
+    return matrix
 
 def disquantize(matrix, qtable):
     matrix[:] = matrix * qtable
+    return matrix
