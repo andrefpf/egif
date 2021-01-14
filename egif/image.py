@@ -1,76 +1,80 @@
 import numpy as np
-from PIL import Image
+
 
 class EgifImage:
-    def __init__(self, matrix, mode='ycbcr'):
+    def __init__(self, matrix):
         self.width = None 
         self.height = None
         self.frames = None 
 
-        self.y = None 
-        self.cb = None 
-        self.cr = None 
-        
-        if mode == 'ycbcr':
-            self.load_from_ycbcr(matrix)
+        self.r = None 
+        self.g = None 
+        self.b = None 
+
+        self.load_matrix(matrix)
+
+    def to_rgb(self):
+        matrix = np.stack((self.r, self.g, self.b), axis=3)
+        matrix = np.clip(matrix, 0, 255)
+        return matrix
+    
+    def toqimage(self):
+        pass 
+    
+    def toqpixmap(self):
+        pass 
+
+    def load_matrix(self, matrix):
+        if matrix.ndim == 3:
+            self._load_bw(matrix)
+        elif (matrix.ndim == 4) and (matrix.shape[3] >= 3):
+            self._load_rgb(matrix)
         else:
-            raise ValueError('Deu merda, amigo.')
+            raise ValueError('Deu merda')
 
-    def load_from_ycbcr(self, ycbcr):
-        y, cb, cr = ycbcr
+    def _load_bw(self, matrix):
+        if matrix.ndim != 3:
+            raise ValueError('Image should be 3 dimentional.')
 
-        if not (y.shape == cb.shape == cr.shape):
-            raise ValueError('Image shapes are not right.')
+        bw = self._trim(matrix)
+        self.frames, self.height, self.width = bw.shape
+        self.r = bw
+
+    def _load_rgb(self, matrix):
+        if (matrix.ndim != 4) or (matrix.shape[3] < 3):
+            raise ValueError('Image should be 3 dimentional.')
+
+        r = matrix[:,:,:,0]
+        g = matrix[:,:,:,1]
+        b = matrix[:,:,:,2]
+
+        r = self._trim(r)
+        g = self._trim(g)
+        b = self._trim(b)
+
+        self.frames, self.height, self.width = r.shape
+
+        self.r = r
+        self.g = g
+        self.b = b
+
+    def _trim(self, matrix, block_size=8):
+        f, h, w = matrix.shape
+
+        if (h < block_size) or (w < block_size):
+            raise ValueError('This matrix is very small.')
+
+        nf = f - f % block_size
+        nh = h - h % block_size
+        nw = w - w % block_size
+
+        new_matrix = np.zeros((nf, nh, nw), dtype=int)
+        new_matrix[:f, :, :] = matrix[:, :nh, :nw] 
         
-        if y.ndim == 2:
-            self.frames = 1
-            self.height = y.shape[0]
-            self.width = y.shape[1]
-        elif y.ndim == 3:
-            self.frames = y.shape[0]
-            self.height = y.shape[1]
-            self.width = y.shape[2]
-        else:
-            raise ValueError('Image should be 2 or 3 dimentional.')
+        for i in range(f, nf):
+            new_matrix[i] = matrix[-1, :nh, :nw]
+        
+        return new_matrix
 
-        self.y = y
-        self.cb = cb
-        self.cr = cr
-
-def load_images(paths, shape=(256,256)):
-    y = []
-    cb = []
-    cr = []
-
-    for path in paths:
-        img = Image.open(path)
-        img = img.resize(shape)
-        # img = img.convert('YCbCr')
-
-        matrix = np.asarray(img, dtype=int)
-
-        y.append(matrix[:,:,0])
-        cb.append(matrix[:,:,1])
-        cr.append(matrix[:,:,2])
-
-    y = np.stack(y)
-    cb = np.stack(cb)
-    cr = np.stack(cr)
-
-    return EgifImage((y,cb,cr))
-
-def load_image(path, shape=(256,256)):
-    img = Image.open(path)
-    img = img.resize(shape)
-    # img = img.convert('YCbCr')
-
-    matrix = np.asarray(img, dtype=int)
-    y = matrix[:,:,0]
-    cb = matrix[:,:,1]
-    cr = matrix[:,:,2]
-
-    return EgifImage((y,cb,cr), mode='ycbcr')
-
-def write_image(animage):
-    pass
-
+    def __eq__(self, other):
+        return self.to_rgb == other.to_rgb
