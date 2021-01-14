@@ -36,22 +36,14 @@ def get_3d_qtable(shape, quality=5):
     frames, height, width = shape
     table = np.ones(shape, dtype=int)  
 
-    a = (6 - quality) * 100 # rise up the maximum value
-    b = 0.5 # smooths the curve 
+    a = (6 - quality) * 100  # rise up the maximum value
+    b = 0.5                  # smooths the curve 
 
     for f in range(frames):
         for h in range(height):
             for w in range(width):
                 exponent = -b * (f+1) * (h+1) * (w+1)
                 table[f,h,w] = a * (1 - np.exp(exponent)) + 1
-
-    # print(table)
-    # exit()
-    # for f in range(frames):
-    #     for h in range(height):
-    #         for w in range(width):
-    #             sig = sigmoid((f + h + w - frames - height - width) / quality)
-    #             table[f,h,w] = 200 - sig * 100
 
     return table 
 
