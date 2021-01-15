@@ -16,9 +16,9 @@ def from_16_bits(data):
     fmt = 'h' * (len(data) // 2) # 16 bits = 2 bytes
     return unpack_from('>' + fmt, data)
 
-def encode(matrix):
+def encode(matrix, quality=5):
     dct = DCT3D(8, 8, 8)
-    table = get_3d_qtable((8,8,8))
+    table = get_3d_qtable((8,8,8), quality)
     matrix = matrix.copy()
 
     a = matrix.copy()
@@ -30,9 +30,9 @@ def encode(matrix):
     array = run_length_encode(matrix.flatten())
     return array
 
-def decode(array, shape):
+def decode(array, shape, quality=5):
     dct = DCT3D(8, 8, 8)
-    table = get_3d_qtable((8,8,8))
+    table = get_3d_qtable((8,8,8), quality)
  
     matrix = run_length_decode(array)
     matrix = np.array(matrix)

@@ -5,6 +5,8 @@ from .image import EgifImage
 from .encoder import encode, decode, to_16_bits, from_16_bits
 from .utils import replace
 
+__all__ = ['read', 'write', 'from_images', 'to_images', 'load', 'dump']
+
 
 MARKER = 0x0FFF
 
@@ -24,8 +26,8 @@ def read(path):
         bits = file.read()
     return load(bits)
 
-def write(img, path='out.egif'):
-    bits = dump(img)
+def write(img, path='out.egif', quality=5):
+    bits = dump(img, quality)
     with open(path, 'wb') as file:
         file.write(bits)
     return bits
@@ -36,7 +38,7 @@ def from_images(paths):
 
     for path in paths:
         img = Image.open(path)
-        img = img.resize((256,256))
+        # img = img.resize((256,256))
         frame = np.asarray(img)
         images.append(frame)
     
@@ -56,29 +58,29 @@ def load(bits):
     g_dct = sectors[2]
     b_dct = sectors[3]
 
-    version, width, height, frames, *args = header
+    version, width, height, frames, quality, *args = header
 
     shape = (frames, height, width)
     
-    r = decode(r_dct, shape)
-    g = decode(g_dct, shape)
-    b = decode(b_dct, shape)
+    r = decode(r_dct, shape, quality)
+    g = decode(g_dct, shape, quality)
+    b = decode(b_dct, shape, quality)
 
     matrix = np.stack((r,g,b), axis=3)
     return EgifImage(matrix)
 
 
-def dump(img):
+def dump(img, quality=5):
     version = 0
     width = img.width
     height = img.height 
     frames = img.frames 
 
-    r = encode(img.r)
-    g = encode(img.g)
-    b = encode(img.b)
+    r = encode(img.r, quality)
+    g = encode(img.g, quality)
+    b = encode(img.b, quality)
 
-    header = [version, width, height, frames]
+    header = [version, width, height, frames, quality]
     sectors = [header, r, g, b]
 
     # assert that the MARKER is unique
