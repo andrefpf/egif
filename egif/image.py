@@ -1,4 +1,5 @@
 import numpy as np
+from PyQt5.QtGui import QPixmap, QImage
 
 
 class EgifImage:
@@ -13,16 +14,19 @@ class EgifImage:
 
         self.load_matrix(matrix)
 
-    def to_rgb(self):
+    def as_rgb(self):
         matrix = np.stack((self.r, self.g, self.b), axis=3)
-        matrix = np.clip(matrix, 0, 255)
+        matrix = np.clip(matrix, 0, 255).astype(np.uint8)
         return matrix
     
-    def toqimages(self):
-        pass 
-    
-    def toqpixmaps(self):
-        pass 
+    def as_qimages(self):
+        fmt = QImage.Format_RGB888
+        qimage = lambda x: QImage(x.data, self.width, 
+                                  self.height, self.width*3, fmt)
+        return [qimage(i) for i in self.as_rgb()]
+
+    def as_qpixmaps(self):
+        return [QPixmap(i) for i in self.as_qimages()]
 
     def load_matrix(self, matrix):
         if matrix.ndim == 3:
