@@ -38,7 +38,6 @@ def from_images(paths):
 
     for path in paths:
         img = Image.open(path)
-        # img = img.resize((256,256))
         frame = np.asarray(img)
         images.append(frame)
     
