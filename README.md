@@ -18,10 +18,10 @@ EGIF try to overcome this issue compressing the images with a Discrete Cossine T
 
 ## Problems
 - The process is very slow, i intend to rewrite it in c++.
-- I need to deal better with colorspaces
 - I also need to test how to go though the image to optimize the compression (maybe zig-zag? wtf is a zig-zag in 3 dimentions? No idea).
 - Some parts are a little bit messy yet.
-- I need to create a decent GUI or a CODEC(?) to show the image
+- I should create a CODEC(?) to make it compatible with players in general, but i really don't know how it works.
 
 ## How to run it
-- No idea.
+- In the project folder run `python egif path/to/file.egif` and wait... because it is very slow.
+- There are some egif files in the `examples/converted folder`.
