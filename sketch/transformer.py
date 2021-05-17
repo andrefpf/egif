@@ -80,6 +80,31 @@ def idwt_2d(matrix, iterations=1):
         result[i] = idwt(matrix[i], iterations)
 
     for j in range(w):
-        result[:, j] = idwt(matrix[:, j], iterations)
+        result[:, j] = idwt(result[:, j], iterations)
     
     return result
+
+def truncate(matrix, details=0.95, iterations=1):
+    '''
+        Remove unecessary details from a transformed matrix. 
+    '''
+    h, w = matrix.shape
+    result = np.zeros((h,w))
+
+    while iterations > 0:
+        htemp = h >> iterations
+        wtemp = w >> iterations
+        threshold = (1-details) * 256 / (iterations * 8)
+
+        for i in range(htemp):
+            for j in range(wtemp):
+                if abs(matrix[i, j+wtemp]) < threshold:
+                    matrix[i, j+wtemp] = 0
+
+                if abs(matrix[i + htemp, j]) < threshold:
+                    matrix[i + htemp, j] = 0
+                    
+                if abs(matrix[i + htemp, j + wtemp]) < threshold:
+                    matrix[i + htemp, j + wtemp] = 0
+
+        iterations -= 1
