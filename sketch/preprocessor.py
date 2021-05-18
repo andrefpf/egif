@@ -3,11 +3,6 @@ from PIL import Image
 import pathlib
 
 
-KR = 0.299
-KG = 0.587
-KB = 0.114
-
-
 def load_images(paths):
     images = []
     for path in paths:
@@ -39,49 +34,33 @@ def merge_matrices(a, b):
     merged[1:h:2, :] = b[1:h:2, :]
     return merged
 
-def rgb_to_ycbcr(R, G, B):
-    h, w = R.shape
+def rgb_to_ycbcr(r, g, b):
+    h, w = r.shape
 
-    Y = np.zeros((h,w))
-    Cb = np.zeros((h,w))
-    Cr = np.zeros((h,w))
+    y = np.zeros((h,w))
+    cb = np.zeros((h,w))
+    cr = np.zeros((h,w))
 
     for i in range(h):
         for j in range(w):
-            r = R[i,j]
-            g = G[i,j]
-            b = B[i,j]
+            y[i,j]  =   0 + (0.299    * r[i,j]) + (0.587    * g[i,j]) + (0.114    * b[i,j])
+            cb[i,j] = 128 - (0.168736 * r[i,j]) + (0.331264 * g[i,j]) + (0.5      * b[i,j])
+            cr[i,j] = 128 + (0.5      * r[i,j]) + (0.418688 * g[i,j]) + (0.081312 * b[i,j])
             
-            y = (KR*r + KG*g + KB*b)
-            cb = (b - y) / (1 - KB) / 2
-            cr = (r - y) / (1 - KR) / 2
-
-            Y[i,j] = Y
-            Cb[i,j] = cb
-            Cr[i,j] = cr 
-            
-    return (Y, Cb, Cr)
+    return (y, cb, cr)
 
 def ycbcr_to_rgb(Y, Cb, Cr):
-    h, w = Y.shape
+    h, w = y.shape
 
-    R = np.zeros((h,w))
-    G = np.zeros((h,w))
-    B = np.zeros((h,w))
+    r = np.zeros((h,w))
+    g = np.zeros((h,w))
+    b = np.zeros((h,w))
 
     for i in range(h):
         for j in range(w):
-            y = Y[i,j]
-            cb = Cb[i,j]
-            cr = Cr[i,j]
+            r[i,j] = y[i,j] + 1.402    * (cr[i,j] - 128)
+            g[i,j] = y[i,j] - 0.344136 * (cb[i,j] - 128) - 0.714136 * (cr[i,j] - 128)
+            b[i,j] = y[i,j] + 1.772    * (cb[i,j] - 128)
 
-            r = y + (2 - 2 * KR) * cr
-            g = y - (2 - 2 * KB) * cb * KB/KR - (2 - 2*KR) * cr * KR/KG
-            b = y + (2 - 2 * KB) * cb
-
-            R[i,j] = r
-            G[i,j] = g 
-            B[i,j] = b
-
-    return R, G, B
+    return r,g,b
 
