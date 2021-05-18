@@ -8,8 +8,7 @@ def load_images(paths):
     for path in paths:
         img = Image.open(path)
         frame = np.asarray(img)
-        rgb = (frame[:,:,0], frame[:,:,1], frame[:,:,2])
-        images.append(rgb)
+        images.append(frame)
     return images
 
 def load_folder(path, formats=None):
