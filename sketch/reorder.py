@@ -1,20 +1,20 @@
 import numpy as np 
 
 
-def unroll(matrix, iterations):
+def unroll(matrix, levels):
     h, w = matrix.shape
     array = np.zeros(h*w, dtype=int)
     k = 0
 
-    htemp = h >> iterations
-    wtemp = w >> iterations
+    htemp = h >> levels
+    wtemp = w >> levels
 
     for i in range(htemp):
         for j in range(wtemp):
             array[k] = matrix[i, j]
             k += 1
 
-    while iterations > 0:
+    while levels > 0:
         for i in range(htemp):
             for j in range(wtemp):
                 array[k] = matrix[i, j + wtemp]
@@ -30,26 +30,26 @@ def unroll(matrix, iterations):
                 array[k] = matrix[i + htemp, j + wtemp]
                 k += 1
 
-        iterations -= 1
-        htemp = h >> iterations
-        wtemp = w >> iterations
+        levels -= 1
+        htemp = h >> levels
+        wtemp = w >> levels
 
     return array
 
-def roll(array, shape, iterations):
+def roll(array, shape, levels):
     h, w = shape
     matrix = np.zeros((h, w), dtype=int)
     k = 0
 
-    htemp = h >> iterations
-    wtemp = w >> iterations
+    htemp = h >> levels
+    wtemp = w >> levels
 
     for i in range(htemp):
         for j in range(wtemp):
             matrix[i, j] = array[k]
             k += 1
 
-    while iterations > 0:
+    while levels > 0:
         for i in range(htemp):
             for j in range(wtemp):
                 matrix[i, j + wtemp] = array[k]
@@ -65,8 +65,8 @@ def roll(array, shape, iterations):
                 matrix[i + htemp, j + wtemp] = array[k]
                 k += 1
 
-        iterations -= 1
-        htemp = h >> iterations
-        wtemp = w >> iterations
+        levels -= 1
+        htemp = h >> levels
+        wtemp = w >> levels
 
     return matrix

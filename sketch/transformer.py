@@ -1,7 +1,7 @@
 import numpy as np 
 
 
-def dwt(array, iterations=1):
+def dwt(array, levels=1):
     '''
         Get an array and apply dwt over it. 
 
@@ -23,13 +23,13 @@ def dwt(array, iterations=1):
     result[:half] = array[::2]
     result[half:] = array[1::2] - array[::2]
 
-    if iterations > 1:
-        result[:half] = dwt(result[:half], iterations-1)
+    if levels > 1:
+        result[:half] = dwt(result[:half], levels-1)
         
     return result
 
 
-def idwt(array, iterations=1):
+def idwt(array, levels=1):
     '''
         Get a dwt transformed array and returns the original one.
 
@@ -45,15 +45,15 @@ def idwt(array, iterations=1):
     array = np.array(array, dtype=int)
     result = np.zeros(half*2, dtype=int)
 
-    if iterations > 1:
-        array[:half] = idwt(array[:half], iterations-1)
+    if levels > 1:
+        array[:half] = idwt(array[:half], levels-1)
 
     result[::2]  = array[:half]
     result[1::2] = array[:half] + array[half:]
     
     return result
 
-def dwt_2d(matrix, iterations=1):
+def dwt_2d(matrix, levels=1):
     '''
         Get a matrix and apply a dwt in both directions.
     '''
@@ -62,14 +62,14 @@ def dwt_2d(matrix, iterations=1):
     result = np.zeros((h, w)) 
 
     for i in range(h):
-        result[i] = dwt(matrix[i], iterations)
+        result[i] = dwt(matrix[i], levels)
     
     for j in range(w):
-        result[:, j] = dwt(result[:, j], iterations)
+        result[:, j] = dwt(result[:, j], levels)
     
     return result
 
-def idwt_2d(matrix, iterations=1):
+def idwt_2d(matrix, levels=1):
     '''
         Get a dwt transformed matrix and returns the original one.
     '''
@@ -77,24 +77,24 @@ def idwt_2d(matrix, iterations=1):
     result = np.zeros((h, w))
 
     for i in range(h):
-        result[i] = idwt(matrix[i], iterations)
+        result[i] = idwt(matrix[i], levels)
 
     for j in range(w):
-        result[:, j] = idwt(result[:, j], iterations)
+        result[:, j] = idwt(result[:, j], levels)
     
     return result
 
-def truncate(matrix, details=0.95, iterations=1):
+def truncate(matrix, details=0.95, levels=1):
     '''
         Remove unecessary details from a transformed matrix. 
     '''
     h, w = matrix.shape
     result = np.zeros((h,w))
 
-    while iterations > 0:
-        htemp = h >> iterations
-        wtemp = w >> iterations
-        threshold = (1-details) * 256 / (iterations * 8)
+    while levels > 0:
+        htemp = h >> levels
+        wtemp = w >> levels
+        threshold = (1-details) * 256 / (levels * 8)
 
         for i in range(htemp):
             for j in range(wtemp):
@@ -107,4 +107,4 @@ def truncate(matrix, details=0.95, iterations=1):
                 if abs(matrix[i + htemp, j + wtemp]) < threshold:
                     matrix[i + htemp, j + wtemp] = 0
 
-        iterations -= 1
+        levels -= 1
