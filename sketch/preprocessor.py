@@ -36,30 +36,18 @@ def merge_matrices(a, b):
 def rgb_to_ycbcr(r, g, b):
     h, w = r.shape
 
-    y = np.zeros((h,w))
-    cb = np.zeros((h,w))
-    cr = np.zeros((h,w))
-
-    for i in range(h):
-        for j in range(w):
-            y[i,j]  =   0 + (0.299    * r[i,j]) + (0.587    * g[i,j]) + (0.114    * b[i,j])
-            cb[i,j] = 128 - (0.168736 * r[i,j]) + (0.331264 * g[i,j]) + (0.5      * b[i,j])
-            cr[i,j] = 128 + (0.5      * r[i,j]) + (0.418688 * g[i,j]) + (0.081312 * b[i,j])
+    y  =   0 + (0.299    * r) + (0.587    * g) + (0.114    * b)
+    cb = 128 - (0.168736 * r) - (0.331264 * g) + (0.5      * b)
+    cr = 128 + (0.5      * r) - (0.418688 * g) - (0.081312 * b)
             
-    return (y, cb, cr)
+    return (y.astype(int), cb.astype(int), cr.astype(int))
 
-def ycbcr_to_rgb(Y, Cb, Cr):
+def ycbcr_to_rgb(y, cb, cr):
     h, w = y.shape
 
-    r = np.zeros((h,w))
-    g = np.zeros((h,w))
-    b = np.zeros((h,w))
+    r = y + 1.402    * (cr - 128) + 2
+    g = y - 0.344136 * (cb - 128) - 0.714136 * (cr - 128)
+    b = y + 1.772    * (cb - 128) + 2
 
-    for i in range(h):
-        for j in range(w):
-            r[i,j] = y[i,j] + 1.402    * (cr[i,j] - 128)
-            g[i,j] = y[i,j] - 0.344136 * (cb[i,j] - 128) - 0.714136 * (cr[i,j] - 128)
-            b[i,j] = y[i,j] + 1.772    * (cb[i,j] - 128)
-
-    return r,g,b
+    return r.astype(int), g.astype(int), b.astype(int)
 
