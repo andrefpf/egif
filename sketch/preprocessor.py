@@ -19,11 +19,10 @@ def load_folder(path, formats=None):
             paths.append(p)
     return load_images(paths)
 
-def correct_dimentions(matrix, iterations=4):
+def correct_dimentions(matrix, levels=4):
     h, w = matrix.shape 
-    h -= h % iterations
-    w -= w % iterations
-
+    h -= h % (1 << levels)
+    w -= w % (1 << levels)
     result = matrix[:h, :w].copy()     
     return result
 
