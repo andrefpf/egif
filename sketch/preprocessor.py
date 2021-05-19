@@ -8,7 +8,7 @@ def load_images(paths):
     for path in paths:
         img = Image.open(path)
         frame = np.asarray(img)
-        images.append(frame)
+        images.append(frame[:,:,0])
     return images
 
 def load_folder(path, formats=None):
@@ -18,12 +18,26 @@ def load_folder(path, formats=None):
             paths.append(p)
     return load_images(paths)
 
-def correct_dimentions(matrix, levels=4):
+def correct_image_dimentions(matrix, levels=1):
     h, w = matrix.shape 
     h -= h % (1 << levels)
     w -= w % (1 << levels)
     result = matrix[:h, :w].copy()     
     return result
+
+def create_chunks(matrices, chunk_size=4, levels=1):
+    f = len(matrices)
+    f -= f % chunk_size
+    
+    chunks = []
+    matrices = matrices[:f]  # discard exedent frames 
+    matrices = [correct_image_dimentions(matrix, levels) for matrix in matrices]
+
+    for i in range(f // chunk_size):
+        chunk = np.stack([matrices[i+j] for j in range(chunk_size)], axis=0)
+        chunks.append(chunk)
+
+    return chunks
 
 def merge_matrices(a, b):
     h, w = a.shape

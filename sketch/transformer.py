@@ -14,7 +14,7 @@ def dwt(array, levels=1):
     '''
 
     if len(array) % 2 != 0:
-        raise ValueError('The size of the array is not multiple of 2')
+        raise ValueError(f'The size of the array ({len(array)}) is not multiple of 2')
 
     half = len(array) // 2
     array = np.array(array, dtype=int)
@@ -55,7 +55,7 @@ def idwt(array, levels=1):
 
 def dwt_2d(matrix, levels=1):
     '''
-        Get a matrix and apply a dwt in both directions.
+        Get a 2d matrix and apply a dwt in both directions.
     '''
 
     h, w = matrix.shape
@@ -71,7 +71,7 @@ def dwt_2d(matrix, levels=1):
 
 def idwt_2d(matrix, levels=1):
     '''
-        Get a dwt transformed matrix and returns the original one.
+        Get a dwt transformed 2d matrix and returns the original one.
     '''
     h, w = matrix.shape
     result = np.zeros((h, w))
@@ -81,6 +81,44 @@ def idwt_2d(matrix, levels=1):
 
     for j in range(w):
         result[:, j] = idwt(result[:, j], levels)
+    
+    return result
+
+def dwt_3d(matrix, levels=1):
+    '''
+        Get a 2d matrix and apply a dwt in both directions.
+    '''
+
+    f, h, w = matrix.shape
+    result = np.zeros((f, h, w))
+
+    # transform frames
+    for k in range(f):
+        result[k] = dwt_2d(matrix[k], levels)
+    
+    # transform time
+    for i in range(h):
+        for j in range(w):
+            result[:,i,j] = dwt(result[:,i,j], levels)
+    
+    return result
+
+def idwt_3d(matrix, levels=1):
+    '''
+        Get a dwt transformed 2d matrix and returns the original one.
+    '''
+
+    h, w, f = matrix.shape
+    result = np.zeros((h, w, f))
+
+    # transform frames
+    for k in range(f):
+        result[k] = idwt_2d(result[k])
+    
+    # transform time
+    for i in range(h):
+        for j in range(w):
+            result[:,i,j] = idwt(result[:,i,j], levels)
     
     return result
 
