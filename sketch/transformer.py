@@ -90,15 +90,15 @@ def dwt_3d(matrix, levels=1):
     '''
 
     f, h, w = matrix.shape
-    result = np.zeros((f, h, w))
+    result = matrix.copy()
 
     # transform frames
     for k in range(f):
-        result[k] = dwt_2d(matrix[k], levels)
+        result[k] = dwt_2d(result[k], levels)
     
     # transform time
-    for i in range(h):
-        for j in range(w):
+    for i in range(h >> levels):
+        for j in range(w >> levels):
             result[:,i,j] = dwt(result[:,i,j], levels)
     
     return result
@@ -108,17 +108,17 @@ def idwt_3d(matrix, levels=1):
         Get a dwt transformed 2d matrix and returns the original one.
     '''
 
-    h, w, f = matrix.shape
-    result = np.zeros((h, w, f))
+    f, h, w = matrix.shape
+    result = matrix.copy()
+    
+    # transform time
+    for i in range(h >> levels):
+        for j in range(w >> levels):
+            result[:,i,j] = idwt(result[:,i,j], levels)
 
     # transform frames
     for k in range(f):
-        result[k] = idwt_2d(result[k])
-    
-    # transform time
-    for i in range(h):
-        for j in range(w):
-            result[:,i,j] = idwt(result[:,i,j], levels)
+        result[k] = idwt_2d(result[k], levels)
     
     return result
 
@@ -127,7 +127,6 @@ def truncate(matrix, details=0.95, levels=1):
         Remove unecessary details from a transformed matrix. 
     '''
     h, w = matrix.shape
-    result = np.zeros((h,w))
 
     while levels > 0:
         htemp = h >> levels
@@ -144,5 +143,5 @@ def truncate(matrix, details=0.95, levels=1):
                     
                 if abs(matrix[i + htemp, j + wtemp]) < threshold:
                     matrix[i + htemp, j + wtemp] = 0
-
         levels -= 1
+    return matrix
