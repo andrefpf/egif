@@ -12,7 +12,7 @@ other format exists like WEBP, JPEG 2000, and maybe i could just implement anoth
 I want to do it from scratch.
 
 ## How it works
-- I will start assuming that you can load a matrix representing the frames. 
+- Load the matrices representing the frames. 
 - The first step is to correct dimentions and break the animation into chunks.
 - Then we change the colorspace to YCbCr, to separate luminance from croeminescence.
 - After this we apply Discrete Wavelet Transform in 3 dimentions, and then remove all the small details.
