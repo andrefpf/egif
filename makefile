@@ -4,7 +4,8 @@
 
 PROJECT_NAME = egif
 
-FLAGS = -c -I include/
+FLAGS = -c -Wall -I include/
+OPTIMIZATION_FLAGS = -O3 -fopenmp -march=native
 
 C_FILES = $(wildcard ./src/*.c)
 H_FILES = $(wildcard ./include/*.h)
@@ -17,13 +18,13 @@ O_FILES = $(subst .c,.o,$(subst src,objects,$(C_FILES)))
 all: obj_folder $(PROJECT_NAME) clean
 
 $(PROJECT_NAME): $(O_FILES) ./objects/main.o
-	gcc -o program $^
+	gcc -o program $^ $(OPTIMIZATION_FLAGS) 
 
 ./objects/%.o: ./src/%.c ./include/%.h
-	gcc -o $@ $< $(FLAGS)
+	gcc -o $@ $< $(FLAGS) $(OPTIMIZATION_FLAGS)
 
 ./objects/main.o: main.c $(H_FILES)
-	gcc -o $@ $< $(FLAGS)
+	gcc -o $@ $< $(FLAGS) $(OPTIMIZATION_FLAGS)
 
 obj_folder:
 	@mkdir -p objects
