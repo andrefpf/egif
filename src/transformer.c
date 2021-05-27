@@ -81,3 +81,29 @@ void idwt_2d(int array[], int width, int height, int levels) {
         idwt(&array[i], height, levels, width);
     }
 }
+
+void dwt_3d(int array[], int width, int height, int frames, int levels) {
+    #pragma omp parallel for schedule(static)
+    for (int i = 0; i < frames; i++) {
+        dwt_2d(&array[i*width*height], width, height, levels);
+    }
+
+    for (int i = 0; i < height >> levels; i++) {
+        for (int j = 0; j < width >> levels; j++) {
+            dwt(&array[i*width + j], frames, levels, width*height);
+        }
+    }
+}
+
+void idwt_3d(int array[], int width, int height, int frames, int levels) {
+    for (int i = 0; i < height >> levels; i++) {
+        for (int j = 0; j < width >> levels; j++) {
+            idwt(&array[i*width + j], frames, levels, width*height);
+        }
+    }
+
+    #pragma omp parallel for schedule(static)
+    for (int i = 0; i < frames; i++) {
+        idwt_2d(&array[i*width*height], width, height, levels);
+    }
+}

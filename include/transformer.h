@@ -9,8 +9,8 @@ void dwt_2d(int array[], int width, int height, int levels);
 
 void idwt_2d(int array[], int width, int height, int levels);
 
-void dwt_3d(int array[], int levels);
+void dwt_3d(int array[], int width, int height, int frames, int levels);
 
-void idwt_3d(int array[], int levels);
+void idwt_3d(int array[], int width, int height, int frames, int levels);
 
 #endif 
