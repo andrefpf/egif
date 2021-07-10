@@ -9,18 +9,18 @@ void rgb_to_ycocg(int image[], int size) {
     int r, g, b;
 
     for (int i = 0; i < size; i += 3) {
-        r = image[i+0];
-        g = image[i+1];
-        b = image[i+2];
+        r = image[i + 0*size];
+        g = image[i + 1*size];
+        b = image[i + 2*size];
 
         co  = r - b;
         tmp = b + co/2;
         cg  = g - tmp;
         y   = tmp + cg/2;
 
-        image[i+0] = y;
-        image[i+1] = co;
-        image[i+2] = cg;
+        image[i + 0*size] = y;
+        image[i + 1*size] = co;
+        image[i + 2*size] = cg;
     }
 }
 
@@ -30,18 +30,18 @@ void ycocg_to_rgb(int image[], int size) {
     int r, g, b;
 
     for (int i = 0; i < size; i += 3) {
-        y  = image[i+0];
-        co = image[i+1];
-        cg = image[i+2];
+        y  = image[i + 0*size];
+        co = image[i + 1*size];
+        cg = image[i + 2*size];
         
         tmp = y - cg/2;
         g   = cg + tmp;
         b   = tmp - co/2;
         r   = b + co;
 
-        image[i+0] = r;
-        image[i+1] = g;
-        image[i+2] = b;
+        image[i + 0*size] = r;
+        image[i + 1*size] = g;
+        image[i + 2*size] = b;
     }
 }
 
