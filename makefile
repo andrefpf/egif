@@ -15,10 +15,18 @@ O_FILES = $(subst .c,.o,$(subst src,objects,$(C_FILES)))
 # COMPILATION
 # ======================================
 
+
+shared: obj_folder share clean
+
+share: $(O_FILES) ./objects/main.o
+	gcc -o egif.so $^ $(OPTIMIZATION_FLAGS) -shared 
+
+
 all: obj_folder $(PROJECT_NAME) clean
 
 $(PROJECT_NAME): $(O_FILES) ./objects/main.o
 	gcc -o program $^ $(OPTIMIZATION_FLAGS) 
+
 
 ./objects/%.o: ./src/%.c ./include/%.h
 	gcc -o $@ $< $(FLAGS) $(OPTIMIZATION_FLAGS)
