@@ -8,7 +8,7 @@ void rgb_to_ycocg(int image[], int size) {
     int y, co, cg;
     int r, g, b;
 
-    for (int i = 0; i < size; i += 3) {
+    for (int i = 0; i < size; i++) {
         r = image[i + 0*size];
         g = image[i + 1*size];
         b = image[i + 2*size];
@@ -29,7 +29,7 @@ void ycocg_to_rgb(int image[], int size) {
     int y, co, cg;
     int r, g, b;
 
-    for (int i = 0; i < size; i += 3) {
+    for (int i = 0; i < size; i++) {
         y  = image[i + 0*size];
         co = image[i + 1*size];
         cg = image[i + 2*size];
