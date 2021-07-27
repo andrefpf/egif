@@ -22,6 +22,25 @@ def dwt_3d(matrix, levels):
     egif.dwt_3d(pointer, w, h, f, levels)
     return matrix
 
+def idwt(array, levels):
+    pointer = array.ctypes.data_as(POINTER(c_int))
+    egif.idwt(pointer, len(array), levels, 1)
+    return array
+
+def idwt_2d(matrix, levels):
+    h, w = matrix.shape
+
+    pointer = matrix.ctypes.data_as(POINTER(c_int))
+    egif.idwt_2d(pointer, w, h, levels)
+    return matrix
+
+def idwt_3d(matrix, levels):
+    f, h, w = matrix.shape
+
+    pointer = matrix.ctypes.data_as(POINTER(c_int))
+    egif.idwt_3d(pointer, w, h, f, levels)
+    return matrix
+
 
 def rgb_to_ycocg(matrix):
     c, h, w = matrix.shape
@@ -36,4 +55,10 @@ def ycocg_to_rgb(matrix):
 
     pointer = matrix.ctypes.data_as(POINTER(c_int))
     egif.ycocg_to_rgb(pointer, h*w)
+    return matrix
+
+def truncate(matrix, details, levels):
+    h, w = matrix.shape
+    pointer = matrix.ctypes.data_as(POINTER(c_int))
+    egif.truncate(pointer, w, h, details, levels)
     return matrix
