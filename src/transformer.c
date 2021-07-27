@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <immintrin.h>
 #include "transformer.h"
+#include "utils.h"
 
 
 void dwt(int array[], int size, int levels, int steps) {
@@ -106,4 +107,39 @@ void idwt_3d(int array[], int width, int height, int frames, int levels) {
     for (int i = 0; i < frames; i++) {
         idwt_2d(&array[i*width*height], width, height, levels);
     }
+}
+
+void truncate(int array[], int width, int height, int details, int levels) {
+    int maxi = height >> levels;
+    int maxj = width  >> levels;
+    int hlog = 0;
+    int wlog = 0;
+
+    int lvl;
+    int threshold;
+
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            if (i > maxi) {
+                hlog++;
+                maxi *= 2;
+            }
+
+            if (j > maxj) {
+                wlog++;
+                maxj *= 2;
+            }
+
+            lvl = max(hlog, wlog);
+            threshold = lvl * (10 - details);
+            
+            if (abs(array[i*width + j]) < threshold) {
+                array[i*width + j] = 0;
+            }
+        }
+
+        maxj = width >> levels;
+        wlog = 0;
+    }
+
 }

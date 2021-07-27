@@ -135,13 +135,61 @@ def truncate(matrix, details=0.95, levels=1):
 
         for i in range(htemp):
             for j in range(wtemp):
+                # upper right
                 if abs(matrix[i, j+wtemp]) < threshold:
                     matrix[i, j+wtemp] = 0
-
+                
+                # lower left
                 if abs(matrix[i + htemp, j]) < threshold:
                     matrix[i + htemp, j] = 0
-                    
+                
+                # lower right 
                 if abs(matrix[i + htemp, j + wtemp]) < threshold:
                     matrix[i + htemp, j + wtemp] = 0
         levels -= 1
     return matrix
+
+def truncate2(matrix, details=0.95, levels=1):
+    h, w = matrix.shape
+
+    result = np.zeros((h,w))
+
+    maxi = h >> levels
+    maxj = w >> levels
+
+    hlog = 0
+    wlog = 0
+
+    for i in range(h):
+        for j in range(w):
+            if i > maxi:
+                hlog += 1
+                maxi *= 2
+
+            if j > maxj:
+                wlog += 1
+                maxj *= 2
+
+            level = max(hlog, wlog)
+            threshold = level * (10 - details)
+
+            if abs(matrix[i,j]) < threshold:
+                matrix[i,j] = 0
+            else:
+                matrix[i,j] = matrix[i,j]
+
+        maxj = w >> levels
+        wlog = 0
+
+    return matrix
+
+def constrain(matrix, mini, maxi):
+    h, w = matrix.shape
+    
+    for i in range(h):
+        for j in range(w):
+            if matrix[i,j] < mini:
+                matrix[i,j] = mini
+
+            if matrix[i,j] > maxi:
+                matrix[i,j] = maxi
