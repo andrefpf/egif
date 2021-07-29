@@ -1,4 +1,5 @@
 import numpy as np 
+from math import log2
 
 
 def dwt(array, levels=1):
@@ -149,7 +150,7 @@ def truncate(matrix, details=0.95, levels=1):
         levels -= 1
     return matrix
 
-def truncate2(matrix, details=0.95, levels=1):
+def truncate2(matrix, details=9, levels=1):
     h, w = matrix.shape
 
     result = np.zeros((h,w))
@@ -181,6 +182,40 @@ def truncate2(matrix, details=0.95, levels=1):
         maxj = w >> levels
         wlog = 0
 
+    return matrix
+
+def truncate3(matrix, details=5, levels=1):
+    # the difference here is that it turn into zero every
+    # detail less than 'details' up to the level 'level'
+
+    h, w = matrix.shape
+    h_start = h >> levels
+    w_start = w >> levels
+
+    # clear details in the right part of the image
+    for i in range(h):
+        for j in range(w_start, w):
+            too_small = abs(matrix[i,j]) < details
+            if too_small:
+                matrix[i,j] = 0
+
+    # clear the remaining details in the lower left part of the image
+    for i in range(h_start, h):
+        for j in range(w_start):
+            too_small = abs(matrix[i,j]) < details
+            if too_small:
+                matrix[i,j] = 0
+
+    return matrix
+
+def truncate4(matrix, details=5, levels=2):
+    h, w = matrix.shape
+    for i in range(1, h):
+        for j in range(1, w):
+            level = int(min(log2(h/i), log2(w/j))) + 1
+            too_small = abs(matrix[i,j]) < details
+            if too_small and level <= levels:
+                matrix[i,j] = 0
     return matrix
 
 def constrain(matrix, mini, maxi):

@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <immintrin.h>
+#include <math.h>
 #include "transformer.h"
 #include "utils.h"
 
@@ -110,36 +110,16 @@ void idwt_3d(int array[], int width, int height, int frames, int levels) {
 }
 
 void truncate(int array[], int width, int height, int details, int levels) {
-    int maxi = height >> levels;
-    int maxj = width  >> levels;
-    int hlog = 0;
-    int wlog = 0;
+    int level, too_small;
 
-    int lvl;
-    int threshold;
+    for (int i = 1; i < height; i++) {
+        for (int j = 1; j < width; j++) {
+            level = log2(min(height/i, width/j)) + 1;
+            too_small = abs(array[i*width + j]) < details;
 
-    for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++) {
-            if (i > maxi) {
-                hlog++;
-                maxi *= 2;
-            }
-
-            if (j > maxj) {
-                wlog++;
-                maxj *= 2;
-            }
-
-            lvl = max(hlog, wlog);
-            threshold = lvl * (10 - details);
-            
-            if (abs(array[i*width + j]) < threshold) {
+            if (too_small && (level <= levels)) {
                 array[i*width + j] = 0;
             }
         }
-
-        maxj = width >> levels;
-        wlog = 0;
     }
-
 }
