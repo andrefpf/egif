@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <math.h>
 #include "transformer.h"
 #include "utils.h"
 
@@ -114,7 +113,7 @@ void truncate(int array[], int width, int height, int details, int levels) {
 
     for (int i = 1; i < height; i++) {
         for (int j = 1; j < width; j++) {
-            level = log2(min(height/i, width/j)) + 1;
+            level = log2int(min(height/i, width/j)) + 1;
             too_small = abs(array[i*width + j]) < details;
 
             if (too_small && (level <= levels)) {
