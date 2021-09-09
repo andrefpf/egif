@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include "priority_queue.h"
 
@@ -8,40 +9,77 @@ PriorityQueue * create_pqueue() {
     return queue;
 }
 
+struct QueueNode * create_pqueue_node(void * data, int priority) {
+    struct QueueNode * node = malloc(sizeof(struct QueueNode));
+    node->data = data;
+    node->priority = priority;
+    node->next = NULL;
+    node->last = NULL;
+    return node;
+}
+
 void pqueue_insert(PriorityQueue * queue, void * data, int priority) {
-    struct QueueNode *l, *n;
-    struct QueueNode * new = malloc(sizeof(struct QueueNode));
+    struct QueueNode * n;
+    struct QueueNode * new = create_pqueue_node(data, priority);
 
-    new->data = data;
-    new->priority = priority;
-    n = queue->head;
-
-    // If it should be the first element just replace the head
-    if ((queue->size == 0) || (new->priority > n->priority)) {
+    if (queue->size == 0) {
         queue->head = new;
-        new->next = n;
+        queue->tail = new;
+        queue->size++;
         return;
     }
 
-    do {
-        l = n;
+    n = queue->head;
+    while ((n != NULL) && (n->priority < new->priority)) {
         n = n->next;
-    } while ((n != NULL) && (new->priority <= n->priority));
+    }
 
-    l->next = new;
-    new->next = n;
+    if (n == queue->head) { 
+        // head
+        new->next = queue->head;
+        queue->head->last = new;
+        queue->head = new;
+    }
+    else if (n == NULL) {
+        // tail
+        new->last = queue->tail;
+        queue->tail->next = new;
+        queue->tail = new;
+    }
+    else {
+        // middle
+        new->next = n;
+        new->last = n->last;
+        new->next->last = new;
+        new->last->next = new;
+    }
     queue->size++;
 }
 
-void * pqueue_get(PriorityQueue * queue) {
+void * pqueue_get_min(PriorityQueue * queue) {
     if (queue->size == 0) {
+        printf("ERROR. The priority queue is empty. \n");
         exit(-1);
     }
 
-    struct QueueNode * last_head = queue->head;
-    void * out = last_head->data;
-    
+    queue->size--;
+    void * out = queue->head->data;
+    struct QueueNode * del = queue->head;
     queue->head = queue->head->next;
-    free(last_head);
-    return out;
+    free(del);
+    return out;    
+}
+
+void * pqueue_get_max(PriorityQueue * queue) {
+    if (queue->size == 0) {
+        printf("ERROR. The priority queue is empty. \n");
+        exit(-1);
+    }
+
+    queue->size--;
+    void * out = queue->tail->data;
+    struct QueueNode * del = queue->tail;
+    queue->tail = queue->tail->last;
+    free(del);
+    return out;    
 }
