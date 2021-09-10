@@ -52,6 +52,16 @@ struct TreeNode * create_tree_node(int data, int freq) {
     return node;
 }
 
+void print_tree(struct TreeNode * tree) {
+    if (IS_LEAF(tree)) {
+        printf("%c(%d) \n", tree->data, tree->freq);
+    } else {
+        printf("(%d) \n", tree->freq);
+        print_tree(tree->left);
+        print_tree(tree->right);
+    }
+}
+
 struct TreeNode * tree_find(struct TreeNode * tree, int value) {
     /* note that when the priority is equal for every
      * content then it is a regular queue */
@@ -60,7 +70,7 @@ struct TreeNode * tree_find(struct TreeNode * tree, int value) {
     pqueue_insert(queue, node, 0);
 
     while (queue->size > 0) {
-        node = pqueue_get_min(queue);
+        node = pqueue_get_max(queue);
 
         if (node->data == value)
             break;
