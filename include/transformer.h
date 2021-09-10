@@ -15,4 +15,8 @@ void idwt_3d(int array[], int width, int height, int frames, int levels);
 
 void truncate(int array[], int width, int height, int details, int levels);
 
+void dwt_animage(struct EgifFileFormat * egif);
+
+void idwt_animage(struct EgifFileFormat * egif);
+
 #endif 

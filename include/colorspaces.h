@@ -1,7 +1,13 @@
 #ifndef __COLORSPACES_H__
 #define __COLORSPACES_H__
 
-#include <stdint.h>
+
+enum colorspace {
+    PB    = 0,
+    RGB   = 1,
+    YCoCg = 2,
+};
+
 
 void rgb_to_ycocg(int image[], int size);
 
