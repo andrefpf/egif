@@ -18,7 +18,7 @@ struct TreeNode * create_huffman_tree(int table[]) {
 
     PriorityQueue * queue = create_pqueue();
 
-    for (int i = 0; i < (1 << CHAR_BIT); i++) {
+    for (int i = 0; i < (1 << BYTESIZE); i++) {
         if (table[i] != 0) {
             node = create_tree_node(i, table[i]);
             pqueue_insert(queue, node, table[i]);
@@ -30,7 +30,7 @@ struct TreeNode * create_huffman_tree(int table[]) {
         right  = pqueue_get_min(queue);
         freq   = left->freq + right->freq;
 
-        node = create_tree_node(CHAR_BIT, freq);
+        node = create_tree_node(BYTESIZE, freq);
         node->left = left;
         node->right = right;
         left->father = node;
@@ -100,7 +100,7 @@ int tree_level(struct TreeNode * tree) {
 }
 
 int * create_huffman_table(char data[], int size) {
-    int * table = calloc(1 << CHAR_BIT, sizeof(int));
+    int * table = calloc(1 << BYTESIZE, sizeof(int));
     for (int i=0; i<size; i++) {
         table[(int) data[i]]++;
     }
@@ -109,19 +109,21 @@ int * create_huffman_table(char data[], int size) {
 
 struct BitArray * huffman_encode(struct BitArray * array) {
     int i, j; 
+    int * table;
+    struct TreeNode * tree;
     struct TreeNode * node;
+    struct BitArray * encoded;
     
-    int * table =  create_huffman_table(array->data, BITTOBYTE(array->size));
-    struct TreeNode * tree = create_huffman_tree(table);
-    struct BitArray * encoded = create_bitarray(BITTOBYTE(array->max_size));
+    table = create_huffman_table(array->data, BITTOBYTE(array->size));
+    tree  = create_huffman_tree(table);
+    encoded = bitarray_create(array->max_size);
 
     /* compiler god, please dont let it be too slow
      * i cant think in a better aproach */
     for (i = 0; i < BITTOBYTE(array->size); i++) {
         node = tree_find(tree, array->data[i]);
-
         for (j = tree_level(node) - 1; j >= 0; j--) {
-            insert_bit(encoded, (node->father->right == node));
+            bitarray_append_bit((node->father->right == node), encoded);
             node = node->father;
         }
     }   
@@ -131,17 +133,16 @@ struct BitArray * huffman_encode(struct BitArray * array) {
 struct BitArray * huffman_decode(struct TreeNode * tree, struct BitArray * encoded) {
     int index = 0;
     struct TreeNode * node;
-    struct BitArray * decoded = create_bitarray(BITTOBYTE(encoded->max_size));
+    struct BitArray * decoded = bitarray_create(BITTOBYTE(encoded->max_size));
 
     while (index < encoded->size) {
         node = tree;
         while (!IS_LEAF(node)) {
-            node = BITTEST(encoded->data, index) ? node->right : node->left;
+            node = bitarray_get_bit(index, encoded) ? node->right : node->left;
             index++;
         }
-        decoded->data[decoded->size * CHAR_BIT] = node->data;
-        decoded->size += CHAR_BIT;
+        bitarray_append_byte(node->data, decoded);
     }
-
+    
     return decoded;
 }

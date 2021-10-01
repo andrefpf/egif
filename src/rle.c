@@ -1,33 +1,26 @@
 #include <limits.h>
 #include <stdio.h>
-
+#include <stdbool.h>
 #include "rle.h"
 #include "bitarray.h"
 
 
 struct BitArray * rle_encode(struct BitArray * array) {
     int repeated = 0;
-    struct BitArray * encoded = create_bitarray(BITTOBYTE(array->max_size));
+    struct BitArray * encoded = bitarray_create(array->max_size);
 
     for (int i = 0; i < BITTOBYTE(array->size); i++) {      
         if ((array->data[i] == 0) && (repeated < (1 << CHAR_BIT))) {
             repeated++;
         } 
         else if (repeated > 0) {
-            encoded->data[BITTOBYTE(encoded->size)] = 0;
-            encoded->size += CHAR_BIT;
-
-            encoded->data[BITTOBYTE(encoded->size)] = repeated;
-            encoded->size += CHAR_BIT;
-
-            encoded->data[BITTOBYTE(encoded->size)] = array->data[i];
-            encoded->size += CHAR_BIT;
-
+            bitarray_append_byte(0, encoded);
+            bitarray_append_byte(repeated, encoded);
+            bitarray_append_byte(bitarray_get_byte(i, array), encoded);
             repeated = 0;
         }
         else {
-            encoded->data[BITTOBYTE(encoded->size)] = array->data[i];
-            encoded->size += CHAR_BIT;
+            bitarray_append_byte(bitarray_get_byte(i, array), encoded);
         }
     }
     return encoded;
@@ -35,7 +28,7 @@ struct BitArray * rle_encode(struct BitArray * array) {
 
 struct BitArray * rle_decode(struct BitArray * array) {
     int last_is_zero = false;
-    struct BitArray * decoded = create_bitarray(BITTOBYTE(array->max_size));
+    struct BitArray * decoded = bitarray_create(array->max_size);
 
     for (int i = 0; i < BITTOBYTE(array->size); i++) {
         if (array->data[i] == 0) {
@@ -44,13 +37,11 @@ struct BitArray * rle_decode(struct BitArray * array) {
         else if (last_is_zero) {
             last_is_zero = false;
             for (int j = 0; j < array->data[i]; j++) {
-                decoded->data[BITTOBYTE(decoded->size)] = 0;
-                decoded->size += CHAR_BIT;
+                bitarray_append_byte(0, decoded);
             }
         }
         else {
-            decoded->data[BITTOBYTE(decoded->size)] = array->data[i];
-            decoded->size += CHAR_BIT;
+            bitarray_append_byte(bitarray_get_byte(i, array), decoded);
         }
     }
 

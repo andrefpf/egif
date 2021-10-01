@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include "transformer.h"
+#include "file.h"
 #include "utils.h"
+
 
 
 void dwt(int array[], int size, int levels, int steps) {
@@ -122,3 +124,12 @@ void truncate(int array[], int width, int height, int details, int levels) {
         }
     }
 }
+
+void dwt_animage(struct EgifFileFormat * egif) {
+
+}
+
+void idwt_animage(struct EgifFileFormat * egif) {
+
+}
+

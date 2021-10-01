@@ -3,6 +3,7 @@
 #include "transformer.h"
 #include "colorspaces.h"
 #include "huffman.h"
+#include "file.h"
 #include "utils.h"
 
 
