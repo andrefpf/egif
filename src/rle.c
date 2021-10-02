@@ -7,7 +7,7 @@
 
 struct BitArray * rle_encode(struct BitArray * array) {
     int repeated = 0;
-    struct BitArray * encoded = bitarray_create(array->max_size);
+    struct BitArray * encoded = create_bitarray(array->max_size);
 
     for (int i = 0; i < BITTOBYTE(array->size); i++) {      
         if ((array->data[i] == 0) && (repeated < (1 << CHAR_BIT))) {
@@ -28,7 +28,7 @@ struct BitArray * rle_encode(struct BitArray * array) {
 
 struct BitArray * rle_decode(struct BitArray * array) {
     int last_is_zero = false;
-    struct BitArray * decoded = bitarray_create(array->max_size);
+    struct BitArray * decoded = create_bitarray(array->max_size);
 
     for (int i = 0; i < BITTOBYTE(array->size); i++) {
         if (array->data[i] == 0) {

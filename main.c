@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "image.h"
 #include "transformer.h"
 #include "colorspaces.h"
 #include "huffman.h"

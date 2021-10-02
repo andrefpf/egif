@@ -18,7 +18,21 @@ struct QueueNode * create_pqueue_node(void * data, int priority) {
     return node;
 }
 
-void pqueue_insert(PriorityQueue * queue, void * data, int priority) {
+int delete_pqueue(PriorityQueue * pqueue) {
+    delete_pqueue_node(pqueue->head);
+    free(pqueue);
+    return 0;
+}
+
+int delete_pqueue_node(struct QueueNode * node) {
+    if (node->next != NULL) {
+        delete_pqueue_node(node->next);
+    }
+    free(node);
+    return 0;
+}
+
+void pqueue_append(PriorityQueue * queue, void * data, int priority) {
     struct QueueNode * n;
     struct QueueNode * new = create_pqueue_node(data, priority);
 

@@ -15,13 +15,12 @@ struct TreeNode * create_huffman_tree(int table[]) {
     struct TreeNode * left;
     struct TreeNode * right;
 
-
     PriorityQueue * queue = create_pqueue();
 
     for (int i = 0; i < (1 << BYTESIZE); i++) {
         if (table[i] != 0) {
             node = create_tree_node(i, table[i]);
-            pqueue_insert(queue, node, table[i]);
+            pqueue_append(queue, node, table[i]);
         }
     }
 
@@ -35,21 +34,34 @@ struct TreeNode * create_huffman_tree(int table[]) {
         node->right = right;
         left->father = node;
         right->father = node;
-        pqueue_insert(queue, node, freq);
+        pqueue_append(queue, node, freq);
     }
 
     return pqueue_get_min(queue);
 }
 
 struct TreeNode * create_tree_node(int data, int freq) {
-    struct TreeNode * node = malloc(sizeof(struct TreeNode));
-    node->data = data;
-    node->freq = freq;
-    node->left = NULL;// FHD = 1920 x 1080
+    struct TreeNode * tree = malloc(sizeof(struct TreeNode));
+    tree->data = data;
+    tree->freq = freq;
+    tree->left = NULL;
+    tree->right = NULL;
+    tree->father = NULL;
+    return tree;
+}
 
-    node->right = NULL;
-    node->father = NULL;
-    return node;
+int delete_tree(struct TreeNode * tree) {
+    if (tree->left != NULL) {
+        delete_tree(tree->left);
+    }
+
+    if (tree->right != NULL) {
+        delete_tree(tree->right);
+    }
+
+    free(tree);
+
+    return 0;
 }
 
 void print_tree(struct TreeNode * tree) {
@@ -67,7 +79,7 @@ struct TreeNode * tree_find(struct TreeNode * tree, int value) {
      * content then it is a regular queue */
     struct TreeNode * node = tree;
     PriorityQueue * queue = create_pqueue();
-    pqueue_insert(queue, node, 0);
+    pqueue_append(queue, node, 0);
 
     while (queue->size > 0) {
         node = pqueue_get_max(queue);
@@ -76,8 +88,8 @@ struct TreeNode * tree_find(struct TreeNode * tree, int value) {
             break;
         
         if (!IS_LEAF(node)) {
-            pqueue_insert(queue, node->left, 0);
-            pqueue_insert(queue, node->right, 0);
+            pqueue_append(queue, node->left, 0);
+            pqueue_append(queue, node->right, 0);
         }
     }
 
@@ -116,7 +128,7 @@ struct BitArray * huffman_encode(struct BitArray * array) {
     
     table = create_huffman_table(array->data, BITTOBYTE(array->size));
     tree  = create_huffman_tree(table);
-    encoded = bitarray_create(array->max_size);
+    encoded = create_bitarray(array->max_size);
 
     /* compiler god, please dont let it be too slow
      * i cant think in a better aproach */
@@ -133,7 +145,7 @@ struct BitArray * huffman_encode(struct BitArray * array) {
 struct BitArray * huffman_decode(struct TreeNode * tree, struct BitArray * encoded) {
     int index = 0;
     struct TreeNode * node;
-    struct BitArray * decoded = bitarray_create(BITTOBYTE(encoded->max_size));
+    struct BitArray * decoded = create_bitarray(BITTOBYTE(encoded->max_size));
 
     while (index < encoded->size) {
         node = tree;

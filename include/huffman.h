@@ -17,6 +17,8 @@ struct TreeNode * create_tree_node(int data, int freq);
 
 struct TreeNode * tree_find(struct TreeNode * tree, int value);
 
+int delete_tree(struct TreeNode * tree);
+
 int tree_level(struct TreeNode * tree);
 
 int * create_huffman_table(char data[], int size);

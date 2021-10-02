@@ -2,23 +2,6 @@
 #define __TRANSFORMER_H__
 
 
-struct EgifFileFormat {
-    char magic_number[256];
-    char version[256];
-
-    int  width;
-    int  height;
-    int  frames;
-    int  colorspace;
-
-    int  levels;
-    int  downsample;
-
-    int  data_size;
-    char data[];
-};
-
-
 void dwt(int array[], int size, int levels, int steps);
 
 void idwt(int array[], int size, int levels, int steps);

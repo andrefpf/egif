@@ -1,6 +1,7 @@
 #ifndef __PRIORITY_QUEUE_H__
 #define __PRIORITY_QUEUE_H__
 
+
 struct QueueNode {
     void * data;
     int priority;
@@ -19,7 +20,11 @@ PriorityQueue * create_pqueue();
 
 struct QueueNode * create_pqueue_node();
 
-void pqueue_insert(PriorityQueue * queue, void * data, int priority);
+int delete_pqueue(PriorityQueue * pqueue);
+
+int delete_pqueue_node(struct QueueNode * node);
+
+void pqueue_append(PriorityQueue * queue, void * data, int priority);
 
 void * pqueue_get_min(PriorityQueue * queue);
 

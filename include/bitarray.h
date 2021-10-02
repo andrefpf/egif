@@ -20,9 +20,9 @@ struct BitArray {
 
 
 // 
-struct BitArray * bitarray_create(int bits);
+struct BitArray * create_bitarray(int bits);
 
-int bitarray_clear(struct BitArray * bitarray);
+int delete_bitarray(struct BitArray * bitarray);
 
 // 
 int bitarray_size_bits(struct BitArray * bitarray);

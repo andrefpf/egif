@@ -6,7 +6,7 @@
 
 
 // 
-struct BitArray * bitarray_create(int bits) {
+struct BitArray * create_bitarray(int bits) {
     struct BitArray * bitarray = malloc(sizeof(struct BitArray));
     bitarray->size = 0;
     bitarray->max_size = bits;
@@ -14,7 +14,7 @@ struct BitArray * bitarray_create(int bits) {
     return bitarray;
 }
 
-int bitarray_clear(struct BitArray * bitarray) {
+int delete_bitarray(struct BitArray * bitarray) {
     free(bitarray->data);
     free(bitarray);
     return 0;

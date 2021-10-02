@@ -1,8 +1,7 @@
 #include <stdlib.h>
+#include "image.h"
 #include "transformer.h"
-#include "file.h"
 #include "utils.h"
-
 
 
 void dwt(int array[], int size, int levels, int steps) {
