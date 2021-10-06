@@ -1,11 +1,12 @@
-#include <limits.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
 #include <stdbool.h>
+
 #include "rle.h"
-#include "bitarray.h"
 
 
-struct BitArray * rle_encode(struct BitArray * array) {
+int rle_encode(struct BitArray * array) {
     int repeated = 0;
     struct BitArray * encoded = create_bitarray(array->max_size);
 
@@ -23,10 +24,16 @@ struct BitArray * rle_encode(struct BitArray * array) {
             bitarray_append_byte(bitarray_get_byte(i, array), encoded);
         }
     }
-    return encoded;
+
+    free(array->data);
+    array->data = encoded->data;
+    array->size = encoded->size;
+    delete_bitarray(encoded);
+
+    return 0;
 }
 
-struct BitArray * rle_decode(struct BitArray * array) {
+int rle_decode(struct BitArray * array) {
     int last_is_zero = false;
     struct BitArray * decoded = create_bitarray(array->max_size);
 
@@ -45,5 +52,10 @@ struct BitArray * rle_decode(struct BitArray * array) {
         }
     }
 
-    return decoded;
+    free(array->data);
+    array->data = decoded->data;
+    array->size = decoded->size;
+    delete_bitarray(decoded);
+
+    return 0;
 }

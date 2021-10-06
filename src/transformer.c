@@ -1,4 +1,5 @@
 #include <stdlib.h>
+
 #include "image.h"
 #include "transformer.h"
 #include "utils.h"
@@ -83,12 +84,7 @@ void idwt_2d(int array[], int width, int height, int levels) {
     }
 }
 
-void dwt_3d(int array[], int width, int height, int frames, int levels) {
-    #pragma omp parallel for schedule(static)
-    for (int i = 0; i < frames; i++) {
-        dwt_2d(&array[i*width*height], width, height, levels);
-    }
-
+void dwt_time(int array[], int width, int height, int frames, int levels) {
     for (int i = 0; i < height >> levels; i++) {
         for (int j = 0; j < width >> levels; j++) {
             dwt(&array[i*width + j], frames, levels, width*height);
@@ -96,16 +92,11 @@ void dwt_3d(int array[], int width, int height, int frames, int levels) {
     }
 }
 
-void idwt_3d(int array[], int width, int height, int frames, int levels) {
+void idwt_time(int array[], int width, int height, int frames, int levels) {
     for (int i = 0; i < height >> levels; i++) {
         for (int j = 0; j < width >> levels; j++) {
             idwt(&array[i*width + j], frames, levels, width*height);
         }
-    }
-
-    #pragma omp parallel for schedule(static)
-    for (int i = 0; i < frames; i++) {
-        idwt_2d(&array[i*width*height], width, height, levels);
     }
 }
 
@@ -124,11 +115,47 @@ void truncate(int array[], int width, int height, int details, int levels) {
     }
 }
 
-void dwt_animage(struct EgifFileFormat * egif) {
+void dwt_egif(struct EgifFileFormat * egif) {
+    int * data = (int *) egif->data;
 
+    #pragma omp parallel for schedule(static)
+    for (int i = 0; i < egif->frames; i++) {
+        dwt_2d(
+            &data[i * egif->width * egif->height], 
+            egif->width, 
+            egif->height, 
+            egif->levels
+        );
+    }
+
+    dwt_time(
+        data, 
+        egif->width, 
+        egif->height, 
+        egif->frames, 
+        egif->levels
+    );
 }
 
-void idwt_animage(struct EgifFileFormat * egif) {
+void idwt_egif(struct EgifFileFormat * egif) {
+    int * data = (int *) egif->data;
 
+    dwt_time(
+        data, 
+        egif->width, 
+        egif->height, 
+        egif->frames, 
+        egif->levels
+    );
+    
+    #pragma omp parallel for schedule(static)
+    for (int i = 0; i < egif->frames; i++) {
+        idwt_2d(
+            &data[i * egif->width * egif->height], 
+            egif->width, 
+            egif->height, 
+            egif->levels
+        );
+    }
 }
 

@@ -23,8 +23,8 @@ int tree_level(struct TreeNode * tree);
 
 int * create_huffman_table(char data[], int size);
 
-struct BitArray * huffman_encode(struct BitArray * array);
+struct BitArray * huffman_encode(int table[], struct BitArray * array);
 
-struct BitArray * huffman_decode(struct TreeNode * tree, struct BitArray * encoded);
+struct BitArray * huffman_decode(int table[], struct BitArray * array);
 
 #endif

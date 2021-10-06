@@ -12,12 +12,12 @@ struct EgifFileFormat {
     int  colorspace;
 
     int  levels;
-    int  downsample;
+    int  chroma_subsampling;
+    int  huffman_table[256];
 
     int  data_size;
     char data[];
 };
-
 
 struct EgifFileFormat * create_egif(char data[], int width, int height, int frames, int colorspace);
 

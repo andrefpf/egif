@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "image.h"
 #include "transformer.h"
 #include "colorspaces.h"
 #include "huffman.h"
 #include "file.h"
-#include "utils.h"
 
 
 void print_array(int array[], int size) {

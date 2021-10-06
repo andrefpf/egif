@@ -1,39 +1,17 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
-inline int constrain_i(int n, int low, int high) {
-    if (n < low)
-        return low;
 
-    if (n > high)
-        return high;
+int constrain_i(int n, int low, int high);
 
-    return n;
-}
+float constrain_f(float n, float low, float high);
 
-inline float constrain_f(float n, float low, float high) {
-    if (n < low)
-        return low;
+int log2int(unsigned int x);
 
-    if (n > high)
-        return high;
+int min(int a, int b);
 
-    return n;
-}
+int max(int a, int b);
 
-inline int log2int(unsigned int x )
-{
-  int ans = 0;
-  while ( x >>= 1 ) ans++;
-  return ans;
-}
-
-inline int min(int a, int b) {
-    return (a < b)? a : b;
-}
-
-inline int max(int a, int b) {
-    return (a > b)? a : b;
-}
+int copy_array(char from[], char to[], int size);
 
 #endif

@@ -112,21 +112,19 @@ int tree_level(struct TreeNode * tree) {
 }
 
 int * create_huffman_table(char data[], int size) {
-    int * table = calloc(1 << BYTESIZE, sizeof(int));
+    int * table = calloc(256, sizeof(int));
     for (int i=0; i<size; i++) {
         table[(int) data[i]]++;
     }
     return table;
 }
 
-struct BitArray * huffman_encode(struct BitArray * array) {
-    int i, j; 
-    int * table;
+struct BitArray * huffman_encode(int table[], struct BitArray * array) {
+    int i, j;
     struct TreeNode * tree;
     struct TreeNode * node;
     struct BitArray * encoded;
     
-    table = create_huffman_table(array->data, BITTOBYTE(array->size));
     tree  = create_huffman_tree(table);
     encoded = create_bitarray(array->max_size);
 
@@ -139,22 +137,41 @@ struct BitArray * huffman_encode(struct BitArray * array) {
             node = node->father;
         }
     }   
-    return encoded;
+
+    free(array->data);
+    array->data = encoded->data;
+    array->size = encoded->size;
+    delete_bitarray(encoded);
+
+    return 0;
 }
 
-struct BitArray * huffman_decode(struct TreeNode * tree, struct BitArray * encoded) {
+struct BitArray * huffman_decode(int table[], struct BitArray * array) {
     int index = 0;
+    struct TreeNode * tree;
     struct TreeNode * node;
-    struct BitArray * decoded = create_bitarray(BITTOBYTE(encoded->max_size));
+    struct BitArray * decoded;
+    
+    tree  = create_huffman_tree(table);
+    decoded = create_bitarray(BITTOBYTE(array->max_size));
 
-    while (index < encoded->size) {
+    while (index < array->size) {
         node = tree;
         while (!IS_LEAF(node)) {
-            node = bitarray_get_bit(index, encoded) ? node->right : node->left;
+            if (bitarray_get_bit(index, array)) {
+                node = node->right;
+            } else {
+                node = node->left;
+            }
             index++;
         }
         bitarray_append_byte(node->data, decoded);
     }
     
-    return decoded;
+    free(array->data);
+    array->data = decoded->data;
+    array->size = decoded->size;
+    delete_bitarray(decoded);
+
+    return 0;
 }
