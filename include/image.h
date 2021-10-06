@@ -19,7 +19,7 @@ struct EgifFileFormat {
     char data[];
 };
 
-struct EgifFileFormat * create_egif(char data[], int width, int height, int frames, int colorspace);
+struct EgifFileFormat * create_egif(int data[], int width, int height, int frames, int colorspace);
 
 int delete_egif(struct EgifFileFormat * egif);
 

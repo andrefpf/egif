@@ -13,7 +13,6 @@ int compress_egif(struct EgifFileFormat * egif, int levels, int chroma_subsampli
 
     /* set values */
     egif->levels = levels;
-    egif->chroma_subsampling = chroma_subsampling;
 
     /* create table */
     int * table = create_huffman_table(egif->data, egif->data_size);
@@ -30,7 +29,7 @@ int compress_egif(struct EgifFileFormat * egif, int levels, int chroma_subsampli
     huffman_encode(egif->huffman_table, temp);
 
     egif->data_size = bitarray_size_bytes(temp);
-    copy_array((char *) temp->data, (char *) egif->data, egif->data_size);
+    copy_array(temp->data, egif->data, egif->data_size);
     delete_bitarray(temp);
 
     return 0;
@@ -44,7 +43,7 @@ int decompress_egif(struct EgifFileFormat * egif) {
     huffman_decode(egif->huffman_table, temp);
     rle_decode(temp);
     egif->data_size = bitarray_size_bytes(temp);
-    copy_array((char *) temp->data, (char *) egif->data, egif->data_size);
+    copy_array(temp->data, egif->data, egif->data_size);
     delete_bitarray(temp);
 
     /* decode */
