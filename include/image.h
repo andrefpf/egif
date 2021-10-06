@@ -1,5 +1,5 @@
-#ifndef __EGIF_H__
-#define __EGIF_H__
+#ifndef __EGIF_IMAGE_H__
+#define __EGIF_IMAGE_H__
 
 
 struct EgifFileFormat {

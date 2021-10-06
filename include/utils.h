@@ -1,5 +1,5 @@
-#ifndef __UTILS_H__
-#define __UTILS_H__
+#ifndef __EGIF_UTILS_H__
+#define __EGIF_UTILS_H__
 
 
 int constrain_i(int n, int low, int high);
