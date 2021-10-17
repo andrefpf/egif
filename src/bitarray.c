@@ -10,7 +10,7 @@ struct BitArray * create_bitarray(int bits) {
     struct BitArray * bitarray = malloc(sizeof(struct BitArray));
     bitarray->size = 0;
     bitarray->max_size = bits;
-    bitarray->data = malloc((bits / BYTESIZE) + 1);
+    bitarray->data = calloc((bits / BYTESIZE) + 1, 1);
     return bitarray;
 }
 
@@ -39,7 +39,10 @@ int bitarray_size_bytes(struct BitArray * bitarray) {
 
 //
 int bitarray_append_bit(int val, struct BitArray * bitarray) {
-    BITSET(bitarray->data, bitarray->size);
+    if (val)
+        BITSET(bitarray->data, bitarray->size);
+    else
+        BITCLEAR(bitarray->data, bitarray->size);
     bitarray->size++;
     return 0;
 }

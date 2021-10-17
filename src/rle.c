@@ -28,7 +28,7 @@ int run_length_encode(struct BitArray * array) {
     free(array->data);
     array->data = encoded->data;
     array->size = encoded->size;
-    delete_bitarray(encoded);
+    free(encoded);
 
     return 0;
 }
@@ -55,7 +55,7 @@ int run_length_decode(struct BitArray * array) {
     free(array->data);
     array->data = decoded->data;
     array->size = decoded->size;
-    delete_bitarray(decoded);
+    free(decoded);
 
     return 0;
 }

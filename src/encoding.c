@@ -1,10 +1,10 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "encoding.h"
 #include "transformer.h"
 #include "rle.h"
 #include "huffman.h"
-#include "utils.h"
 
 
 int egif_compress(struct EgifFileFormat * egif, int levels, int chroma_subsampling) {
@@ -24,6 +24,8 @@ int egif_decompress(struct EgifFileFormat * egif) {
 int egif_dwt(struct EgifFileFormat * egif, int levels) {
     int * data = (int *) egif->data;
     egif->levels = levels;
+
+    data[0] = 0;
 
     #pragma omp parallel for schedule(static)
     for (int i = 0; i < egif->frames; i++) {
@@ -70,48 +72,17 @@ int egif_idwt(struct EgifFileFormat * egif) {
     return 0;
 }
 
-int egif_huffman_encode(struct EgifFileFormat * egif) {
-    int * table;
-    int max_size;
-    struct BitArray * bitarray;
-    
-    table = create_huffman_table(egif->data, egif->data_size);
-    copy_array((char *) egif->huffman_table, (char *) table, 256*4);
-    free(table);
-
-    max_size = (egif->width * egif->height * egif->frames * 16);
-    bitarray = create_bitarray_init(egif->data, egif->data_size, max_size);
-    huffman_encode(egif->huffman_table, bitarray);
-    egif->data_size = bitarray_size_bytes(bitarray);
-    copy_array(egif->data, bitarray->data, egif->data_size);
-    delete_bitarray(bitarray);
-
-    return 0;
-}
-
-int egif_huffman_decode(struct EgifFileFormat * egif) {
-    struct BitArray * bitarray;
-    int max_size;
-
-    max_size = (egif->width * egif->height * egif->frames * 16);
-    bitarray = create_bitarray_init(egif->data, egif->data_size, max_size);
-    huffman_decode(egif->huffman_table, bitarray);
-    egif->data_size = bitarray_size_bytes(bitarray);
-    copy_array(egif->data, bitarray->data, egif->data_size);
-    delete_bitarray(bitarray);
-
-    return 0;
-}
-
 int egif_run_length_encode(struct EgifFileFormat * egif) {
     struct BitArray * bitarray;
     int max_size;
 
     max_size = (egif->width * egif->height * egif->frames * 16);
     bitarray = create_bitarray_init(egif->data, egif->data_size, max_size);
+
     run_length_encode(bitarray);
+    
     egif->data_size = bitarray_size_bytes(bitarray);
-    copy_array(egif->data, bitarray->data, egif->data_size);
+    memcpy(egif->data, bitarray->data, egif->data_size);
     delete_bitarray(bitarray);
     
     return 0;
@@ -123,9 +94,48 @@ int egif_run_length_decode(struct EgifFileFormat * egif) {
 
     max_size = (egif->width * egif->height * egif->frames * 16);
     bitarray = create_bitarray_init(egif->data, egif->data_size, max_size);
+    
     run_length_decode(bitarray);
+    
     egif->data_size = bitarray_size_bytes(bitarray);
-    copy_array(egif->data, bitarray->data, egif->data_size);
+    memcpy(egif->data, bitarray->data, egif->data_size);
+    delete_bitarray(bitarray);
+
+    return 0;
+}
+
+int egif_huffman_encode(struct EgifFileFormat * egif) {
+    int * table;
+    int max_size;
+    struct BitArray * bitarray;
+    
+    table = create_huffman_table((char *) egif->data, egif->data_size);
+    memcpy((void*) egif->huffman_table, (void*) table, 256 * sizeof(int));
+    free(table);
+
+    max_size = (egif->width * egif->height * egif->frames * 16);
+    bitarray = create_bitarray_init(egif->data, egif->data_size, max_size);
+    
+    huffman_encode(egif->huffman_table, bitarray);
+    
+    egif->data_size = bitarray_size_bytes(bitarray);
+    memcpy((void*) egif->data, (void*) bitarray->data, egif->data_size);
+    delete_bitarray(bitarray);
+
+    return 0;
+}
+
+int egif_huffman_decode(struct EgifFileFormat * egif) {
+    struct BitArray * bitarray;
+    int max_size;
+
+    max_size = (egif->width * egif->height * egif->frames * 16);
+    bitarray = create_bitarray_init(egif->data, egif->data_size, max_size);
+    
+    huffman_decode(egif->huffman_table, bitarray);
+    
+    egif->data_size = bitarray_size_bytes(bitarray);
+    memcpy(egif->data, bitarray->data, egif->data_size);
     delete_bitarray(bitarray);
 
     return 0;

@@ -3,7 +3,6 @@
 
 #include "image.h"
 #include "colorspaces.h"
-#include "utils.h"
 
 
 struct EgifFileFormat * create_egif(int data[], int width, int height, int frames, int colorspace) {
@@ -25,7 +24,7 @@ struct EgifFileFormat * create_egif(int data[], int width, int height, int frame
     egif->colorspace = colorspace;
 
     egif->data_size = size;
-    copy_array(egif->data, (char*) data, size);
+    memcpy((void*) egif->data, (void*) data, size);
     
     return egif;
 }

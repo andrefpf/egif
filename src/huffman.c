@@ -112,15 +112,19 @@ int tree_level(struct TreeNode * tree) {
 }
 
 int * create_huffman_table(char data[], int size) {
+    unsigned char index;
     int * table = calloc(256, sizeof(int));
-    for (int i=0; i<size; i++) {
-        table[(int) data[i]]++;
+
+    for (int i = 0; i < size; i++) {
+        index = data[i];
+        table[index]++;
     }
     return table;
 }
 
 struct BitArray * huffman_encode(int table[], struct BitArray * array) {
     int i, j;
+    unsigned char val;
     struct TreeNode * tree;
     struct TreeNode * node;
     struct BitArray * encoded;
@@ -128,10 +132,10 @@ struct BitArray * huffman_encode(int table[], struct BitArray * array) {
     tree  = create_huffman_tree(table);
     encoded = create_bitarray(array->max_size);
 
-    /* compiler god, please dont let it be too slow
-     * i cant think in a better aproach */
+    /* compiler god, please dont let it be too slow */
     for (i = 0; i < BITTOBYTE(array->size); i++) {
-        node = tree_find(tree, array->data[i]);
+        val = array->data[i];
+        node = tree_find(tree, val);
         for (j = tree_level(node) - 1; j >= 0; j--) {
             bitarray_append_bit((node->father->right == node), encoded);
             node = node->father;
@@ -141,7 +145,7 @@ struct BitArray * huffman_encode(int table[], struct BitArray * array) {
     free(array->data);
     array->data = encoded->data;
     array->size = encoded->size;
-    delete_bitarray(encoded);
+    free(encoded);
 
     return 0;
 }
@@ -171,7 +175,7 @@ struct BitArray * huffman_decode(int table[], struct BitArray * array) {
     free(array->data);
     array->data = decoded->data;
     array->size = decoded->size;
-    delete_bitarray(decoded);
+    free(decoded);
 
     return 0;
 }
