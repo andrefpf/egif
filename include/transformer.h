@@ -10,14 +10,10 @@ void dwt_2d(int array[], int width, int height, int levels);
 
 void idwt_2d(int array[], int width, int height, int levels);
 
-void dwt_3d(int array[], int width, int height, int frames, int levels);
+void dtt(int array[], int width, int height, int frames, int levels);
 
-void idwt_3d(int array[], int width, int height, int frames, int levels);
+void idtt(int array[], int width, int height, int frames, int levels);
 
 void truncate(int array[], int width, int height, int details, int levels);
-
-void dwt_egif(struct EgifFileFormat * egif);
-
-void idwt_egif(struct EgifFileFormat * egif);
 
 #endif 

@@ -12,6 +12,6 @@ int min(int a, int b);
 
 int max(int a, int b);
 
-int copy_array(char from[], char to[], int size);
+int copy_array(char to[], char from[], int size);
 
 #endif

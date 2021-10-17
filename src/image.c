@@ -25,7 +25,7 @@ struct EgifFileFormat * create_egif(int data[], int width, int height, int frame
     egif->colorspace = colorspace;
 
     egif->data_size = size;
-    copy_array((char *) data, egif->data, size);
+    copy_array(egif->data, (char*) data, size);
     
     return egif;
 }
