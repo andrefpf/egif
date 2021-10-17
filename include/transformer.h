@@ -2,18 +2,18 @@
 #define __TRANSFORMER_H__
 
 
-void dwt(int array[], int size, int levels, int steps);
+int dwt(int array[], int size, int levels, int steps);
 
-void idwt(int array[], int size, int levels, int steps);
+int idwt(int array[], int size, int levels, int steps);
 
-void dwt_2d(int array[], int width, int height, int levels);
+int dwt_2d(int array[], int width, int height, int levels);
 
-void idwt_2d(int array[], int width, int height, int levels);
+int idwt_2d(int array[], int width, int height, int levels);
 
-void dtt(int array[], int width, int height, int frames, int levels);
+int dtt(int array[], int width, int height, int frames, int levels);
 
-void idtt(int array[], int width, int height, int frames, int levels);
+int idtt(int array[], int width, int height, int frames, int levels);
 
-void truncate(int array[], int width, int height, int details, int levels);
+int truncate(int array[], int width, int height, int details, int levels);
 
 #endif 

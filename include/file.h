@@ -5,11 +5,7 @@
 #include "image.h"
 
 
-int compress_egif(struct EgifFileFormat * egif, int levels, int chroma_subsampling);
-
-int decompress_egif(struct EgifFileFormat * egif);
-
-int write_egif(struct EgifFileFormat * egif, FILE * file, int levels, int chroma_subsampling);
+int write_egif(struct EgifFileFormat * egif, int levels, int chroma_subsampling, FILE * file);
 
 struct EgifFileFormat * read_egif(FILE * file);
 

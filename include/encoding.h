@@ -1,6 +1,8 @@
 #ifndef __EGIF_ENCODING_H__
 #define __EGIF_ENCODING_H__
 
+#include "image.h"
+
 
 int egif_compress(struct EgifFileFormat * egif, int levels, int chroma_subsampling);
 

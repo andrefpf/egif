@@ -6,7 +6,7 @@
 #include "rle.h"
 
 
-int rle_encode(struct BitArray * array) {
+int run_length_encode(struct BitArray * array) {
     int repeated = 0;
     struct BitArray * encoded = create_bitarray(array->max_size);
 
@@ -33,7 +33,7 @@ int rle_encode(struct BitArray * array) {
     return 0;
 }
 
-int rle_decode(struct BitArray * array) {
+int run_length_decode(struct BitArray * array) {
     int last_is_zero = false;
     struct BitArray * decoded = create_bitarray(array->max_size);
 

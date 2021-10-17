@@ -5,7 +5,7 @@
 #include "utils.h"
 
 
-void dwt(int array[], int size, int levels, int steps) {
+int dwt(int array[], int size, int levels, int steps) {
     int half;
     int even, odd; // even and odd indexes of the array 
     int start, end; // first and second part of the array 
@@ -34,9 +34,10 @@ void dwt(int array[], int size, int levels, int steps) {
     }
 
     free(temp);
+    return 0;
 }
 
-void idwt(int array[], int size, int levels, int steps) {
+int idwt(int array[], int size, int levels, int steps) {
     int half;
     int even, odd, start, end;
     int *temp = malloc(size * sizeof(int));
@@ -62,9 +63,10 @@ void idwt(int array[], int size, int levels, int steps) {
     }
 
     free(temp);
+    return 0;
 }
 
-void dwt_2d(int array[], int width, int height, int levels) {
+int dwt_2d(int array[], int width, int height, int levels) {
     for (int i = 0; i < height; i++) {
         dwt(&array[i*width], width, levels, 1);
     }
@@ -72,9 +74,11 @@ void dwt_2d(int array[], int width, int height, int levels) {
     for (int i = 0; i < width; i++) {
         dwt(&array[i], height, levels, width);
     }
+
+    return 0;
 }
 
-void idwt_2d(int array[], int width, int height, int levels) {
+int idwt_2d(int array[], int width, int height, int levels) {
     for (int i = 0; i < height; i++) {
         idwt(&array[i*width], width, levels, 1);
     }
@@ -82,25 +86,31 @@ void idwt_2d(int array[], int width, int height, int levels) {
     for (int i = 0; i < width; i++) {
         idwt(&array[i], height, levels, width);
     }
+
+    return 0;
 }
 
-void dtt(int array[], int width, int height, int frames, int levels) {
+int dtt(int array[], int width, int height, int frames, int levels) {
     for (int i = 0; i < height >> levels; i++) {
         for (int j = 0; j < width >> levels; j++) {
             dwt(&array[i*width + j], frames, levels, width*height);
         }
     }
+
+    return 0;
 }
 
-void idtt(int array[], int width, int height, int frames, int levels) {
+int idtt(int array[], int width, int height, int frames, int levels) {
     for (int i = 0; i < height >> levels; i++) {
         for (int j = 0; j < width >> levels; j++) {
             idwt(&array[i*width + j], frames, levels, width*height);
         }
     }
+
+    return 0;
 }
 
-void truncate(int array[], int width, int height, int details, int levels) {
+int truncate(int array[], int width, int height, int details, int levels) {
     int level, too_small;
 
     for (int i = 1; i < height; i++) {
@@ -113,4 +123,6 @@ void truncate(int array[], int width, int height, int details, int levels) {
             }
         }
     }
+
+    return 0;
 }
