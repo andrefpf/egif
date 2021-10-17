@@ -14,8 +14,8 @@ struct BitArray * create_bitarray(int bits) {
     return bitarray;
 }
 
-struct BitArray * create_bitarray_init(char array[], int size) {
-    struct BitArray * bitarray = create_bitarray(size * BYTESIZE);
+struct BitArray * create_bitarray_init(char array[], int size, int max_size) {
+    struct BitArray * bitarray = create_bitarray(max_size * BYTESIZE);
     for (int i = 0; i < size; i++) {
         bitarray_append_byte((int) array[i], bitarray);
     }

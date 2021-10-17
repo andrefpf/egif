@@ -22,7 +22,7 @@ struct BitArray {
 // 
 struct BitArray * create_bitarray(int bits);
 
-struct BitArray * create_bitarray_init(char array[], int size);
+struct BitArray * create_bitarray_init(char array[], int size, int max_size);
 
 int delete_bitarray(struct BitArray * bitarray);
 
