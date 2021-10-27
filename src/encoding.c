@@ -9,7 +9,7 @@
 
 
 int egif_compress(struct EgifFileFormat * egif, int levels, int chroma_subsampling) {
-    // egif_dwt(egif, levels);
+    egif_dwt(egif, levels);
     egif_run_length_encode(egif);
     egif_huffman_encode(egif);
     return 0;
@@ -17,8 +17,8 @@ int egif_compress(struct EgifFileFormat * egif, int levels, int chroma_subsampli
 
 int egif_decompress(struct EgifFileFormat * egif) {
     egif_huffman_decode(egif);
-    // egif_run_length_decode(egif);
-    // egif_idwt(egif);
+    egif_run_length_decode(egif);
+    egif_idwt(egif);
     return 0;
 }
 
