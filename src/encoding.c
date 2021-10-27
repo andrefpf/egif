@@ -79,7 +79,6 @@ int egif_run_length_encode(struct EgifFileFormat * egif) {
 
     max_size = (egif->width * egif->height * egif->frames * 3 * sizeof(int));
 
-    printf("egif->data_size %d \n", egif->data_size);
     decoded = create_bitarray_init(egif->data, egif->data_size, max_size);
     encoded = run_length_encode(decoded);
 
