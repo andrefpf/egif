@@ -9,7 +9,7 @@ struct EgifFileFormat * create_egif(int data[], int width, int height, int frame
     int size;
     struct EgifFileFormat * egif;
     
-    size = width * height * frames * 4;
+    size = width * height * frames * sizeof(int);
     if (colorspace != PB)
         size *= 3;
 
