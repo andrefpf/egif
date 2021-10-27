@@ -1,6 +1,8 @@
 #ifndef __HUFFMAN_H__
 #define __HUFFMAN_H__
 
+#include "bitarray.h"
+
 
 struct TreeNode {
     int data;
@@ -21,7 +23,7 @@ int delete_tree(struct TreeNode * tree);
 
 int tree_level(struct TreeNode * tree);
 
-int * create_huffman_table(char data[], int size);
+int * create_huffman_table(byte_t data[], int size);
 
 struct BitArray * huffman_encode(int table[], struct BitArray * array);
 

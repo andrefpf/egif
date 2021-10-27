@@ -39,10 +39,12 @@ int bitarray_size_bytes(struct BitArray * bitarray) {
 
 //
 int bitarray_append_bit(int val, struct BitArray * bitarray) {
-    if (val)
+    if (val) {
         BITSET(bitarray->data, bitarray->size);
-    else
+    }
+    else {
         BITCLEAR(bitarray->data, bitarray->size);
+    }
     bitarray->size++;
     return 0;
 }
@@ -69,7 +71,8 @@ byte_t bitarray_pop_byte(struct BitArray * bitarray) {
 int bitarray_set_bit(int index, int value, struct BitArray * bitarray) {
     if (value) {
         BITSET(bitarray->data, index);
-    } else {
+    } 
+    else {
         BITCLEAR(bitarray->data, index);
     }
     return 0;

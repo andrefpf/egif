@@ -4,8 +4,8 @@
 #include "bitarray.h"
 
 
-int run_length_encode(struct BitArray * array);
+struct BitArray * run_length_encode(struct BitArray * array);
 
-int run_length_decode(struct BitArray * array);
+struct BitArray * run_length_decode(struct BitArray * array);
 
 #endif
