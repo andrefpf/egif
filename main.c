@@ -77,8 +77,9 @@ int mse(int matrix_a[], int matrix_b[], int width, int height) {
 
 int test_compress_decompress() {
     int w = 8;
-    int h = 4;
+    int h = 8;
     int f = 1;
+    int level = 1;
 
     int size = w * h * f;
     int * tst = malloc(size * sizeof(int));
@@ -89,7 +90,10 @@ int test_compress_decompress() {
 
     struct EgifFileFormat * img = create_egif(tst, w, h, f, 0);
 
-    egif_compress(img, 4, 0);
+    egif_compress(img, level, 0);
+
+    printf("Original size: %ld bytes \n", size * sizeof(int));
+    printf("Compressed size: %d bytes \n", img->data_size);
 
     egif_decompress(img);
 

@@ -17,7 +17,7 @@ struct TreeNode * create_huffman_tree(int table[]) {
 
     PriorityQueue * queue = create_pqueue();
 
-    for (int i = 0; i < (1 << BYTESIZE); i++) {
+    for (int i = 0; i < 256; i++) {
         if (table[i] != 0) {
             node = create_tree_node(i, table[i]);
             pqueue_append(queue, node, table[i]);
@@ -29,7 +29,7 @@ struct TreeNode * create_huffman_tree(int table[]) {
         right  = pqueue_get_min(queue);
         freq   = left->freq + right->freq;
 
-        node = create_tree_node(BYTESIZE, freq);
+        node = create_tree_node(256, freq);
         node->left = left;
         node->right = right;
         left->father = node;
@@ -178,11 +178,7 @@ struct BitArray * huffman_decode(int table[], struct BitArray * encoded) {
             index++;
         }
 
-        // check array boundaries
-        if (index < bitarray_size_bits(encoded)) {
-            bitarray_append_byte((byte_t) node->data, decoded);
-        }
-
+        bitarray_append_byte((byte_t) node->data, decoded);
     }
 
     return decoded;

@@ -50,7 +50,7 @@ int bitarray_append_bit(int val, struct BitArray * bitarray) {
 }
 
 int bitarray_append_byte(byte_t val, struct BitArray * bitarray) {
-    bitarray->data[bitarray_size_bytes(bitarray)] = (char) val;
+    bitarray->data[bitarray_size_bytes(bitarray)] = val;
     bitarray->size += BYTESIZE;
     return 0;
 }
@@ -86,7 +86,7 @@ int bitarray_set_byte(int index, byte_t value, struct BitArray * bitarray) {
 
 // 
 int bitarray_get_bit(int index, struct BitArray * bitarray) {
-    return BITTEST(bitarray->data, index);
+    return BITTEST(bitarray->data, index) != 0;
 }
 
 byte_t bitarray_get_byte(int index, struct BitArray * bitarray) {
