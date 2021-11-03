@@ -17,7 +17,7 @@ O_FILES = $(subst .c,.o,$(subst src,objects,$(C_FILES)))
 
 
 
-all: obj_folder $(PROJECT_NAME) clean
+all: obj_folder $(PROJECT_NAME)
 
 $(PROJECT_NAME): $(O_FILES) ./objects/main.o
 	gcc -o program $^ $(OPTIMIZATION_FLAGS) 

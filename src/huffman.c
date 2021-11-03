@@ -149,7 +149,7 @@ struct BitArray * huffman_encode(int table[], struct BitArray * decoded) {
         for (j = (size - 1); j >= 0; j--) {
             bitarray_append_bit(tmp[j], encoded);
         }
-    }   
+    }
 
     return encoded;
 }
