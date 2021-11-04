@@ -22,6 +22,8 @@ all: obj_folder $(PROJECT_NAME)
 $(PROJECT_NAME): $(O_FILES) ./objects/main.o
 	gcc -o program $^ $(OPTIMIZATION_FLAGS) 
 
+run: obj_folder $(PROJECT_NAME)
+	./program
 
 shared: obj_folder share clean
 
@@ -30,10 +32,10 @@ share: $(O_FILES) ./objects/main.o
 
 
 ./objects/%.o: ./src/%.c ./include/%.h
-	gcc -o $@ $< $(FLAGS) $(OPTIMIZATION_FLAGS)
+	gcc -o $@ -g $< $(FLAGS) $(OPTIMIZATION_FLAGS)
 
 ./objects/main.o: main.c $(H_FILES)
-	gcc -o $@ $< $(FLAGS) $(OPTIMIZATION_FLAGS)
+	gcc -o $@ -g $< $(FLAGS) $(OPTIMIZATION_FLAGS)
 
 obj_folder:
 	@mkdir -p objects
